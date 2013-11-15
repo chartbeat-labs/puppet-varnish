@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'varnish' do
   context 'supported operating systems' do
-    ['Debian', 'RedHat'].each do |osfamily|
+    ['Debian'].each do |osfamily|
       describe "varnish class without any parameters on #{osfamily}" do
         let(:params) {{ }}
         let(:facts) {{

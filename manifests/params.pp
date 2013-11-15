@@ -9,10 +9,6 @@ class varnish::params {
       $package_name = 'varnish'
       $service_name = 'varnish'
     }
-    'RedHat', 'Amazon': {
-      $package_name = 'varnish'
-      $service_name = 'varnish'
-    }
     default: {
       fail("${::operatingsystem} not supported")
     }
