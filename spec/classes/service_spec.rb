@@ -6,6 +6,10 @@ describe 'varnish::service' do
       :osfamily => 'Debian',
     }}
 
-    it { should contain_service('varnish') }
+    it { should contain_service('varnish').with({
+        :ensure => 'stopped',
+        :enable => false,
+      })
+    }
   end
 end

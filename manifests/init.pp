@@ -1,11 +1,8 @@
 # == Class: varnish
 #
-# Full description of class varnish here.
-#
-# === Parameters
-#
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
+# This is the default class for varnish. It install the necessary varnish
+# package and any additional support files. The main work is done in the
+# varnish::instance resource.
 #
 class varnish (
 ) inherits varnish::params {
