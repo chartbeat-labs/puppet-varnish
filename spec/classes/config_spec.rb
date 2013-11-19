@@ -6,6 +6,6 @@ describe 'varnish::config' do
       :osfamily => 'Debian',
     }}
 
-    it { should contain_file('/usr/share/varnish/reload_vcl') }
+    it { should contain_file('/usr/share/varnish/reload-vcl') }
   end
 end
