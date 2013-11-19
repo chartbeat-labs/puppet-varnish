@@ -11,6 +11,10 @@ class varnish::params {
       $service_name = 'varnish'
       $vmod_dependencies = ['build-essential', 'dpkg-dev', 'libtool',
                             'pkg-config', 'libpcre3-dev', 'git']
+      $apt_location = "http://repo.varnish-cache.org/debian/"
+      $apt_repos = 'varnish-3.0'
+      $apt_key = 'C4DEFFEB'
+      $apt_key_source = 'http://repo.varnish-cache.org/debian/GPG-key.txt'
     }
     default: {
       fail("${::operatingsystem} not supported")

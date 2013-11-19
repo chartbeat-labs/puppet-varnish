@@ -5,9 +5,10 @@ describe 'varnish::vmod', :type => :define do
     'libvmod-test'
   end
 
-  let :facts do
-    { :osfamily => 'Debian' }
-  end
+  let(:facts) {{
+    :osfamily => 'Debian',
+    :lsbdistcodename => 'precise',
+  }}
 
   describe 'when installing a varnish vmod' do
     it { should contain_package('libvmod-test').with({
