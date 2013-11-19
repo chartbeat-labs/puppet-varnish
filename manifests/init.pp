@@ -10,7 +10,7 @@ class varnish (
   # validate parameters here
 
   anchor { 'varnish::begin': } ->
-  class { 'varnish::apt': } ->
+  class { 'varnish::repo': } ->
   class { 'varnish::install': } ->
   class { 'varnish::config': }
   class { 'varnish::service': } ->

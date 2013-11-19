@@ -1,11 +1,13 @@
 require 'spec_helper'
 
-describe 'varnish::apt' do
-  describe 'varnish::apt class on Debian' do
+describe 'varnish::repo' do
+  describe 'varnish::repo class on Debian' do
     let(:facts) {{
       :osfamily => 'Debian',
       :lsbdistcodename => 'precise',
     }}
+
+    it { should include_class('apt') }
 
     it { should contain_apt__source('varnish-cache').with({
         'location' => 'http://repo.varnish-cache.org/debian/',
