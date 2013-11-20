@@ -46,6 +46,12 @@
 # [*vmod_deps*]
 #   A list of vmod package dependencies to install.
 #
+# [*nfiles*]
+#   Max open files
+#
+# [*memlock*]
+#   Maximum locked memory size for shared memory log
+#
 define varnish::instance(
   $ensure = 'running',
   $backends = ['127.0.0.1:8080'],
@@ -58,6 +64,8 @@ define varnish::instance(
   $varnishncsa = false,
   $vmods = [],
   $vmod_deps = [],
+  $nfiles = '131072',
+  $memlock = '82000',
 ) {
   include varnish
 
