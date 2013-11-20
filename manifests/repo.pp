@@ -9,7 +9,7 @@ class varnish::repo {
 
   apt::source { 'varnish-cache':
     location    => $varnish::params::apt_location,
-    release     => $lsbdistcodename,
+    release     => $::lsbdistcodename,
     repos       => $varnish::params::apt_repos,
     key         => $varnish::params::apt_key,
     key_source  => $varnish::params::apt_key_source,
