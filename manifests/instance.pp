@@ -349,7 +349,7 @@ define varnish::instance(
   }
 
   exec { "varnish-${instance} safe reload" :
-    command     => "/usr/share/varnish/reload-vcl -f ${main_vcl}",
+    command     => "/usr/share/varnish/reload-vcl -f ${daemon_conf}",
     refreshonly => true,
   }
 
