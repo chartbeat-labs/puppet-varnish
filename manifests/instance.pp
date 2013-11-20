@@ -148,7 +148,7 @@ define varnish::instance(
   $vcc_err_unref = 'on',
   $vcl_trace = 'off',
 ) {
-  include varnish
+  require varnish
 
   validate_bool($varnishlog, $varnishncsa)
 
@@ -358,41 +358,46 @@ define varnish::instance(
     # For purged resources, need to stop the service before removing files
     'purged' : {
       Service["varnish-${instance}"]
-        -> Service["varnishlog-${instance}"]
-        -> Service["varnishncsa-${instance}"]
-        -> File[$daemon_conf]
-        -> File[$log_daemon_conf]
-        -> File[$ncsa_log_daemon_conf]
-        -> File[$subs_vcl]
-        -> File[$main_vcl]
-        -> File[$service_conf]
-        -> File[$log_service_conf]
-        -> File[$ncsa_log_service_conf]
-        -> Class[varnish]
+      -> Service["varnishlog-${instance}"]
+      -> Service["varnishncsa-${instance}"]
+      -> File[$daemon_conf]
+      -> File[$log_daemon_conf]
+      -> File[$ncsa_log_daemon_conf]
+      -> File[$subs_vcl]
+      -> File[$main_vcl]
+      -> File[$service_conf]
+      -> File[$log_service_conf]
+      -> File[$ncsa_log_service_conf]
     }
     default : {
+      # Setup resource ordering
+      Package <| tag == 'varnish-vmod' |>
+      -> File[$daemon_conf]
+      -> File[$service_conf]
+      -> File[$main_vcl]
+      -> File[$subs_vcl]
+      -> Service["varnish-${instance}"]
+
       # $daemon_conf and $service_conf should do a hard restart of varnish
-      Class[varnish]
-        -> File[$daemon_conf]
-        -> File[$service_conf]
-        -> Service["varnish-${instance}"]
+      File[$daemon_conf] ~> Service["varnish-${instance}"]
+      File[$service_conf] ~> Service["varnish-${instance}"]
 
-      # vmods and vcl confs should do a safe reload
-      Class[varnish]
-        -> Package <| tag == 'varnish-vmod' |>
-        -> File[$main_vcl]
-        -> File[$subs_vcl]
-        ~> Exec["varnish-${instance} safe reload"]
+      # Ensure the service is running before any calls to safe reload
+      Service["varnish-${instance}"] -> Exec["varnish-${instance} safe reload"]
 
-      Class[varnish]
-        -> File[$log_daemon_conf]
-        -> File[$log_service_conf]
-        ~> Service["varnishlog-${instance}"]
+      # vcl confs and vmods should do a safe reload
+      Package <| tag == 'varnish-vmod' |>
+      ~> Exec["varnish-${instance} safe reload"]
+      File[$main_vcl] ~> Exec["varnish-${instance} safe reload"]
+      File[$subs_vcl] ~> Exec["varnish-${instance} safe reload"]
 
-      Class[varnish]
-        -> File[$ncsa_log_daemon_conf]
-        -> File[$ncsa_log_service_conf]
-        ~> Service["varnishncsa-${instance}"]
+      File[$log_daemon_conf]
+      -> File[$log_service_conf]
+      ~> Service["varnishlog-${instance}"]
+
+      File[$ncsa_log_daemon_conf]
+      -> File[$ncsa_log_service_conf]
+      ~> Service["varnishncsa-${instance}"]
     }
   }
 }
