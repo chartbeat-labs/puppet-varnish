@@ -42,6 +42,10 @@
 #
 # [*purge_acls*]
 #   Set an array of ip addresses or netblocks to allow purge access from.
+#   Varnish is a littly finnicky about netblock representations. They need to be
+#   the network surrounded in double quotes, followed by bare slash notation,
+#   i.e "10.0.0.0"/8. So for an array of these, e.g. [ '"10.0.0.0"/8',
+#   '"192.168.0.2"/24', '"127.0.0.1"' ]
 #
 # [*vmods*]
 #   A list of vmod packages to install.
@@ -64,7 +68,7 @@ define varnish::instance(
   $main_conf = 'varnish/vcl/main.erb',
   $subs_conf = 'varnish/vcl/subs.erb',
   $secret_file = '/etc/varnish/secret',
-  $purge_acls = ['localhost'],
+  $purge_acls = ['"localhost"'],
   $varnishlog = false,
   $varnishncsa = false,
   $vmods = [],
