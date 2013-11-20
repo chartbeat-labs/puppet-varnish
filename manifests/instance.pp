@@ -7,6 +7,9 @@
 # [*ensure*]
 #   The instance state, i.e. running, stopped, purged.
 #
+# [*init_method*]
+#   The init method to use, supported methods are sysvinit, runit, and upstart
+#
 # [*address*]
 #   An array of address:port's to listen on. Defaults to :80 which is all Ipv4
 #   addresses on port 6081.
@@ -54,6 +57,7 @@
 #
 define varnish::instance(
   $ensure = 'running',
+  $init_method = 'sysvinit',
   $backends = ['127.0.0.1:8080'],
   $address = [':6081'],
   $admin_address = '127.0.0.1:6082',
@@ -66,34 +70,39 @@ define varnish::instance(
   $vmod_deps = [],
   $nfiles = '131072',
   $memlock = '82000',
+  $health_check_url = '/alive',
+  $health_check_timeout = '300ms',
+  $health_check_interval = '1s',
+  $health_check_window = '10',
+  $health_check_threshold = '6',
+  $health_check_expected_response = '200',
+  $backend_first_byte_timeout = '10s',
+  $storage = [],
 ) {
   include varnish
 
   validate_bool($varnishlog, $varnishncsa)
 
-  # Assign a more intuitive variable
-  $instance = $name
-
-  # Instance variables
-  $daemon_conf = "/etc/default/${instance}-varnish"
-  $log_daemon_conf = "/etc/default/${instance}-varnishlog"
-  $ncsa_log_daemon_conf = "/etc/default/${instance}-varnishncsa"
-  $main_vcl = "/etc/varnish/main-${instance}.vcl"
-  $subs_vcl = "/etc/varnish/${instance}.vcl"
-  $service_conf = "/etc/init/varnish-${instance}.conf"
-  $log_service_conf = "/etc/init/varnishlog-${instance}.conf"
-  $ncsa_log_service_conf = "/etc/init/varnishncsa-${instance}.conf"
-
   # Determine whether it's a fileserver path or template path.
-  case $conf {
+  case $main_conf {
     /puppet:\/\/\// : {
-      $vcl_file_type = 'source'
+      $main_file_type = 'source'
     }
     default : {
-      $vcl_file_type = 'template'
+      $main_file_type = 'template'
     }
   }
 
+  case $subs_conf {
+    /puppet:\/\/\// : {
+      $subs_file_type = 'source'
+    }
+    default : {
+      $subs_file_type = 'template'
+    }
+  }
+
+  # Determine the instance state
   case $ensure {
     'running': {
       $package_ensure = 'present'
@@ -113,6 +122,9 @@ define varnish::instance(
       $service_ensure = 'stopped'
       $service_enable = false
     }
+    default : {
+      fail("Varnish::Instance[${instance}]: Unsupported ensure => ${ensure}")
+    }
   }
 
   if $varnishlog {
@@ -129,6 +141,51 @@ define varnish::instance(
   } else {
     $ncsa_log_service_ensure = 'stopped'
     $ncsa_log_service_enable = false
+  }
+
+
+  # Assign a more intuitive variable
+  $instance = $name
+
+  # Instance variables
+  $daemon_conf = "/etc/default/varnish-${instance}"
+  $log_daemon_conf = "/etc/default/varnishlog-${instance}"
+  $ncsa_log_daemon_conf = "/etc/default/varnishncsa-${instance}"
+  $main_vcl = "/etc/varnish/main-${instance}.vcl"
+  $subs_vcl = "/etc/varnish/subs-${instance}.vcl"
+
+  # Determine init method
+  case $init_method {
+    'sysvinit' : {
+      $service_provider = 'debian'
+      $service_conf = "/etc/init.d/varnish-${instance}"
+      $log_service_conf = "/etc/init.d/varnishlog-${instance}"
+      $ncsa_log_service_conf = "/etc/init.d/varnishncsa-${instance}"
+    }
+    'runit' : {
+      $service_provider = 'runit'
+      $service_conf = "/etc/sv/varnish-${instance}/run"
+      $log_service_conf = "/etc/sv/varnishlog-${instance}/run"
+      $ncsa_log_service_conf = "/etc/sv/varnishncsa-${instance}/run"
+    }
+    'upstart' : {
+      $service_provider = 'upstart'
+      $service_conf = "/etc/init/varnish-${instance}.conf"
+      $log_service_conf = "/etc/init/varnishlog-${instance}.conf"
+      $ncsa_log_service_conf = "/etc/init/varnishncsa-${instance}.conf"
+    }
+    default : {
+      fail("Varnish::Instance[${instance}]: Unsupported init => ${init_method}")
+    }
+  }
+
+  # Determine storage file
+  if empty($storage) {
+    $storage_real = [
+      "file,/var/lib/varnish/${instance}/varnish_storage.bin,70%"
+    ]
+  } else {
+    $storage_real = $storage
   }
 
   # Resource Defaults
@@ -160,11 +217,16 @@ define varnish::instance(
   }
 
   # VCL Config files
-  file { $main_vcl :
-    content => template($main_conf),
+  case $main_file_type {
+    'source' : {
+      file { $main_vcl : source => $main_conf }
+    }
+    default : {
+      file { $main_vcl : content => template($main_conf) }
+    }
   }
 
-  case $vcl_file_type {
+  case $subs_file_type {
     'source' : {
       file { $subs_vcl : source => $subs_conf }
     }
@@ -177,44 +239,47 @@ define varnish::instance(
   file { $service_conf :
     ensure  => $file_ensure,
     mode    => '0700',
-    content => template('varnish/init/varnish.erb'),
+    content => template("varnish/${init_method}/varnish.erb"),
   }
 
   file { $log_service_conf :
     ensure  => $file_ensure,
     mode    => '0700',
-    content => template('varnish/init/varnishlog.erb'),
+    content => template("varnish/${init_method}/varnishlog.erb"),
   }
 
   file { $ncsa_log_service_conf :
     ensure  => $file_ensure,
     mode    => '0700',
-    content => template('varnish/init/varnishncsa.erb'),
+    content => template("varnish/${init_method}/varnishncsa.erb"),
   }
 
   # Services
-  service { "${instance}-varnish" :
+  service { "varnish-${instance}" :
     ensure     => $service_ensure,
     enable     => $service_enable,
     hasstatus  => true,
     hasrestart => true,
+    provider   => $service_provider,
   }
 
-  service { "${instance}-varnishlog" :
+  service { "varnishlog-${instance}" :
     ensure     => $log_service_ensure,
     enable     => $log_service_enable,
     hasstatus  => true,
     hasrestart => true,
+    provider   => $service_provider,
   }
 
-  service { "${instance}-varnishncsa" :
-    ensure => $ncsa_log_service_ensure,
-    enable => $ncsa_log_service_enable,
+  service { "varnishncsa-${instance}" :
+    ensure     => $ncsa_log_service_ensure,
+    enable     => $ncsa_log_service_enable,
     hasstatus  => true,
     hasrestart => true,
+    provider   => $service_provider,
   }
 
-  exec { "${instance}-varnish safe reload" :
+  exec { "varnish-${instance} safe reload" :
     command     => "/usr/share/varnish/reload_vcl -f ${main_vcl}",
     refreshonly => true,
   }
@@ -223,9 +288,9 @@ define varnish::instance(
   case $ensure {
     # For purged resources, need to stop the service before removing files
     'purged' : {
-      Service["${instance}-varnish"]
-        -> Service["${instance}-varnishlog"]
-        -> Service["${instance}-varnishncsa"]
+      Service["varnish-${instance}"]
+        -> Service["varnishlog-${instance}"]
+        -> Service["varnishncsa-${instance}"]
         -> File[$daemon_conf]
         -> File[$log_daemon_conf]
         -> File[$ncsa_log_daemon_conf]
@@ -241,24 +306,24 @@ define varnish::instance(
       Class[varnish]
         -> File[$daemon_conf]
         -> File[$service_conf]
-        -> Service["${instance}-varnish"]
+        -> Service["varnish-${instance}"]
 
       # vmods and vcl confs should do a safe reload
       Class[varnish]
         -> Package <| tag == 'varnish-vmod' |>
         -> File[$main_vcl]
         -> File[$subs_vcl]
-        ~> Exec["${instance}-varnish safe reload"]
+        ~> Exec["varnish-${instance} safe reload"]
 
       Class[varnish]
         -> File[$log_daemon_conf]
         -> File[$log_service_conf]
-        ~> Service["${instance}-varnishlog"]
+        ~> Service["varnishlog-${instance}"]
 
       Class[varnish]
         -> File[$ncsa_log_daemon_conf]
         -> File[$ncsa_log_service_conf]
-        ~> Service["${instance}-varnishncsa"]
+        ~> Service["varnishncsa-${instance}"]
     }
   }
 }

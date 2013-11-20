@@ -1,0 +1,81 @@
+# Configuration file for varnish
+#
+# /etc/init.d/varnish expects the variables $DAEMON_OPTS
+# to be set from this shell script fragment.
+#
+# Should we start varnishd at boot?  Set to "no" to disable.
+START=yes
+
+DAEMON_OPTS="-n <%= @instance %> \
+                -u varnish -g varnish \
+                -a <%= @address.join(',') %> \
+                -f <%= @main_vcl %> \
+                -T <%= @admin_address %> \
+                -t <%= @default_ttl %> \
+                -w <%= @thread_pool_min %>, <%= @thread_pool_max %>, <%= @thread_pool_timeout %> \
+                -S <%= @secret_file %> \
+<% @storage_real.each do |storage| -%>
+                -s <%= storage %> \
+<% end -%>
+                -p <%= @auto_restart %> \
+                -p <%= @ban_dups %> \
+                -p <%= @ban_lurker_sleep %> \
+                -p <%= @between_bytes_timeout %> \
+                -p <%= @cli_buffer %> \
+                -p <%= @cli_timeout %> \
+                -p <%= @clock_skew %> \
+                -p <%= @connect_timeout %> \
+                -p <%= @critbit_cooloff %> \
+                -p <%= @default_grace %> \
+                -p <%= @default_keep %> \
+                -p <%= @diag_bitmap %> \
+                -p <%= @esi_syntax %> \
+                -p <%= @expiry_sleep %> \
+                -p <%= @fetch_chunksize %> \
+                -p <%= @fetch_maxchunksize %> \
+                -p <%= @first_byte_timeout %> \
+                -p <%= @gzip_level %> \
+                -p <%= @gzip_memlevel %> \
+                -p <%= @gzip_stack_buffer %> \
+                -p <%= @gzip_tmp_space %> \
+                -p <%= @gzip_window %> \
+                -p <%= @http_gzip_support %> \
+                -p <%= @http_max_hdr %> \
+                -p <%= @http_range_support %> \
+                -p <%= @http_req_hdr_len %> \
+                -p <%= @http_req_size %> \
+                -p <%= @http_resp_hdr_len %> \
+                -p <%= @http_resp_size %> \
+                -p <%= @listen_depth %> \
+                -p <%= @log_hashstring %> \
+                -p <%= @log_local_address %> \
+                -p <%= @lru_interval %> \
+                -p <%= @max_esi_depth %> \
+                -p <%= @max_restarts %> \
+                -p <%= @nuke_limit %> \
+                -p <%= @ping_interval %> \
+                -p <%= @pipe_timeout %> \
+                -p <%= @prefer_ipv6 %> \
+                -p <%= @queue_max %> \
+                -p <%= @rush_exponent %> \
+                -p <%= @saintmode_threshold %> \
+                -p <%= @send_timeout %> \
+                -p <%= @sess_timeout %> \
+                -p <%= @sess_workspace %> \
+                -p <%= @session_linger %> \
+                -p <%= @session_max %> \
+                -p <%= @shm_reclen %> \
+                -p <%= @shm_workspace %> \
+                -p <%= @shortlived %> \
+                -p <%= @syslog_cli_traffic %> \
+                -p <%= @thread_pool_add_delay %> \
+                -p <%= @thread_pool_add_threshold %> \
+                -p <%= @thread_pool_fail_delay %> \
+                -p <%= @thread_pool_purge_delay %> \
+                -p <%= @thread_pool_stack %> \
+                -p <%= @thread_pool_workspace %> \
+                -p <%= @thread_pools %> \
+                -p <%= @thread_stats_rate %> \
+                -p <%= @vcc_err_unref %> \
+                -p <%= @vcl_dir %> \
+                -p <%= @vcl_trace %>"
