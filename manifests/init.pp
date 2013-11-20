@@ -12,7 +12,7 @@ class varnish (
   anchor { 'varnish::begin': } ->
   class { 'varnish::repo': } ->
   class { 'varnish::install': } ->
-  class { 'varnish::config': }
+  class { 'varnish::config': } ->
   class { 'varnish::service': } ->
   anchor { 'varnish::end': }
 
