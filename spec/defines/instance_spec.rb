@@ -185,5 +185,77 @@ describe 'varnish::instance', :type => :define do
            'ensure' => 'purged'
        })
     }
+
+    it { should contain_file('/etc/init.d/varnish-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          })
+    }
+    it { should contain_file('/etc/init.d/varnishlog-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          })
+    }
+    it { should contain_file('/etc/init.d/varnishncsa-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          })
+    }
+    it { should contain_file('/etc/default/varnish-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_file('/etc/default/varnishlog-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_file('/etc/default/varnishncsa-default').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_file('/etc/varnish/main-default.vcl').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_file('/etc/varnish/subs-default.vcl').with({
+            :ensure => 'absent',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_service("varnish-default").with({
+            :ensure => 'stopped',
+            :enable => false,
+          })
+    }
+    it { should contain_service("varnishlog-default").with({
+            :ensure => 'stopped',
+            :enable => false,
+          })
+    }
+    it { should contain_service("varnishlog-default").with({
+            :ensure => 'stopped',
+            :enable => false,
+          })
+    }
   end
 end
