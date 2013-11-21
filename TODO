@@ -7,3 +7,4 @@
   file { '/tmp/foo':
     require => Class[varnish::install]
     notity => Class[varnish::service]
+* Add Upstart and Runit service support
