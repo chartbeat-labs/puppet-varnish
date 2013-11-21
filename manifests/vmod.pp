@@ -14,7 +14,7 @@ define varnish::vmod(
   $ensure = 'present',
   $depends = [],
 ) {
-  include varnish
+  require varnish
 
   ensure_packages($varnish::params::vmod_dependencies)
   ensure_packages($depends)

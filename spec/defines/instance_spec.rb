@@ -50,7 +50,7 @@ describe 'varnish::instance', :type => :define do
           }) \
           .with('ensure' => 'present') \
           .with_content(/-n default/) \
-          .with_content(%r{-f /etc/varnish/main-default.vcl}) \
+          .with_content(%r{-f /etc/varnish/default.vcl}) \
           .with_content(/-a :6081/) \
           .with_content(/-T 127.0.0.1:6082/) \
           .with_content(/-t 120/) \
@@ -135,7 +135,7 @@ describe 'varnish::instance', :type => :define do
           }) \
           .with_content(/^VARNISHNCSA_ENABLED=1$/)
     }
-    it { should contain_file('/etc/varnish/main-default.vcl').with({
+    it { should contain_file('/etc/varnish/default.vcl').with({
             :ensure => 'present',
             :owner => 'root',
             :group => 'root',
@@ -149,15 +149,7 @@ describe 'varnish::instance', :type => :define do
           .with_content(%r{.expected_response = 200}) \
           .with_content(/backend backend0.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8080";.*first_byte_timeout\ =\ 60s;/sm) \
           .with_content(/backend = backend0;/) \
-          .with_content(/acl purge \{\n\s*"localhost";\n\}/m) \
-          .with_content(/include "subs-default.vcl";/)
-    }
-    it { should contain_file('/etc/varnish/subs-default.vcl').with({
-            :ensure => 'present',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
+          .with_content(/acl purge \{\n\s*"localhost";\n\}/m)
     }
     it { should contain_service("varnish-default").with({
             :ensure => 'running',
@@ -192,8 +184,7 @@ describe 'varnish::instance', :type => :define do
       '/etc/default/varnish-default',
       '/etc/default/varnishlog-default',
       '/etc/default/varnishncsa-default',
-      '/etc/varnish/main-default.vcl',
-      '/etc/varnish/subs-default.vcl',
+      '/etc/varnish/default.vcl',
     ].each do |file|
       it { should contain_file(file).with({
             :ensure => 'absent',
@@ -229,8 +220,7 @@ describe 'varnish::instance', :type => :define do
       '/etc/default/varnish-default',
       '/etc/default/varnishlog-default',
       '/etc/default/varnishncsa-default',
-      '/etc/varnish/main-default.vcl',
-      '/etc/varnish/subs-default.vcl',
+      '/etc/varnish/default.vcl',
     ].each do |file|
       it { should contain_file(file).with({
             :ensure => 'present',
@@ -261,6 +251,7 @@ describe 'varnish::instance', :type => :define do
         :address => ['127.0.0.1:6081', '127.0.0.1:6082'],
         :admin_address => [':6083'],
         :purge_acls => ['"10.0.0.0"/8', '"192.168.0.1"'],
+        :extra_conf => 'puppet:///modules/configs/fooserver/foo.vcl',
         :varnishlog => true,
         :varnishncsa => true,
         :vmods => ['libvmod-throttle'],
@@ -389,7 +380,7 @@ describe 'varnish::instance', :type => :define do
           }) \
           .with('ensure' => 'present') \
           .with_content(/-n foo/) \
-          .with_content(%r{-f /etc/varnish/main-foo.vcl}) \
+          .with_content(%r{-f /etc/varnish/foo.vcl}) \
           .with_content(/-a 127.0.0.1:6081,127.0.0.1:6082/) \
           .with_content(/-T :6083/) \
           .with_content(/-t 1/) \
@@ -474,7 +465,7 @@ describe 'varnish::instance', :type => :define do
           }) \
           .with_content(/^VARNISHNCSA_ENABLED=1$/)
     }
-    it { should contain_file('/etc/varnish/main-foo.vcl').with({
+    it { should contain_file('/etc/varnish/foo.vcl').with({
             :ensure => 'present',
             :owner => 'root',
             :group => 'root',
@@ -492,13 +483,14 @@ describe 'varnish::instance', :type => :define do
           .with_content(/backend = backend1;/) \
           .with_content(/acl purge.*"10.0.0.0"\/8;.*"192.168.0.1";/sm)  \
           .with_content(/import throttle;/) \
-          .with_content(/include "subs-foo.vcl";/)
+          .with_content(/include "foo-extra.vcl";/)
     }
-    it { should contain_file('/etc/varnish/subs-foo.vcl').with({
+    it { should contain_file('/etc/varnish/foo-extra.vcl').with({
             :ensure => 'present',
             :owner => 'root',
             :group => 'root',
             :mode => '0644',
+            :source => 'puppet:///modules/configs/fooserver/foo.vcl',
           })
     }
     it { should contain_service("varnish-foo").with({
@@ -514,6 +506,22 @@ describe 'varnish::instance', :type => :define do
     it { should contain_service("varnishlog-foo").with({
             :ensure => 'running',
             :enable => true,
+          })
+    }
+  end
+
+  describe "varnish instance with custom vcl" do
+    let :params do
+      { :vcl_conf => 'puppet:///modules/configs/test/custom.vcl',
+        :extra_conf => 'puppet:///modules/configs/test/subs.vcl'
+      }
+    end
+    it { should contain_file('/etc/varnish/default.vcl').with({
+            :source => 'puppet:///modules/configs/test/custom.vcl'
+          })
+    }
+    it { should contain_file('/etc/varnish/default-extra.vcl').with({
+            :source => 'puppet:///modules/configs/test/subs.vcl'
           })
     }
   end

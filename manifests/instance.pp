@@ -26,25 +26,32 @@
 # [*varnishncsa*]
 #   Whether to enable the varnishncsa daemon.
 #
-# [*main_conf*]
+# [*vcl_conf*]
 #   You can set a custom vcl file to use here. Valid values are from a
 #   fileserver resource, e.g. 'puppet:///...', or a path to a template. Raw
 #   string content is not supported. This is the file for defining backends,
-#   directors, purge acls, vmod imports etc. Be sure to include your subs conf
-#   in this file since this is the main vcl file that varnish uses.
+#   directors, purge acls, vmod imports and subroutines. If you specify a file
+#   resource then then the parameters like backends, health check params, purge
+#   acls etc will need to be statically specified in the vcl config. The default
+#   template used here uses those params as template vars. You can also specify
+#   a custom template so if you plan on using those parameters be sure to setup
+#   you template to consume them.
 #
-# [*subs_conf*]
+# [*extra_conf*]
 #   You can set a custom vcl file to use here. Valid values are from a
 #   fileserver resource, e.g. 'puppet:///...', or a path to a template. Raw
-#   string content is not supported. DO NOT include import or backend configs
-#   in this document. Those are set by backend/vmods parameters. This is a conf
-#   for strictly defining subroutines, e.g. vcl_recv/vcl_fetch.
+#   string content is not supported. This is for the use case where you want to
+#   keep the default vcl conf but want to extend subroutines. The subroutines as
+#   defined in the default vcl conf do not return so you can extend subroutines
+#   here and they will be appeneded at varnish compile time to the subroutines
+#   defined in the default vcl. The only exception is a return statement in
+#   vcl_recv when the req.request is PURGE, which immediately returns a lookup.
 #
 # [*purge_acls*]
 #   Set an array of ip addresses or netblocks to allow purge access from.
 #   Varnish is a littly finnicky about netblock representations. They need to be
 #   the network surrounded in double quotes, followed by bare slash notation,
-#   i.e "10.0.0.0"/8. So for an array of these, e.g. [ '"10.0.0.0"/8',
+#   i.e "10.0.0.0"/8. So for an array , e.g. [ '"10.0.0.0"/8',
 #   '"192.168.0.2"/24', '"127.0.0.1"' ]
 #
 # [*vmods*]
@@ -65,8 +72,8 @@ define varnish::instance(
   $backends = ['127.0.0.1:8080'],
   $address = [':6081'],
   $admin_address = '127.0.0.1:6082',
-  $main_conf = 'varnish/vcl/main.erb',
-  $subs_conf = 'varnish/vcl/subs.erb',
+  $vcl_conf = 'varnish/vcl/default.erb',
+  $extra_conf = undef,
   $secret_file = '/etc/varnish/secret',
   $purge_acls = ['"localhost"'],
   $varnishlog = false,
@@ -153,21 +160,21 @@ define varnish::instance(
   validate_bool($varnishlog, $varnishncsa)
 
   # Determine whether it's a fileserver path or template path.
-  case $main_conf {
+  case $vcl_conf {
     /puppet:\/\/\// : {
-      $main_file_type = 'source'
+      $vcl_file_type = 'source'
     }
     default : {
-      $main_file_type = 'template'
+      $vcl_file_type = 'template'
     }
   }
 
-  case $subs_conf {
+  case $extra_conf {
     /puppet:\/\/\// : {
-      $subs_file_type = 'source'
+      $extra_file_type = 'source'
     }
     default : {
-      $subs_file_type = 'template'
+      $extra_file_type = 'template'
     }
   }
 
@@ -220,8 +227,8 @@ define varnish::instance(
   $daemon_conf = "/etc/default/varnish-${instance}"
   $log_daemon_conf = "/etc/default/varnishlog-${instance}"
   $ncsa_log_daemon_conf = "/etc/default/varnishncsa-${instance}"
-  $main_vcl = "/etc/varnish/main-${instance}.vcl"
-  $subs_vcl = "/etc/varnish/subs-${instance}.vcl"
+  $vcl = "/etc/varnish/${instance}.vcl"
+  $extra_vcl = "/etc/varnish/${instance}-extra.vcl"
 
   # Determine init method
   case $init_method {
@@ -286,21 +293,23 @@ define varnish::instance(
   }
 
   # VCL Config files
-  case $main_file_type {
+  case $vcl_file_type {
     'source' : {
-      file { $main_vcl : source => $main_conf }
+      file { $vcl : source => $vcl_conf }
     }
     default : {
-      file { $main_vcl : content => template($main_conf) }
+      file { $vcl : content => template($vcl_conf) }
     }
   }
 
-  case $subs_file_type {
-    'source' : {
-      file { $subs_vcl : source => $subs_conf }
-    }
-    default : {
-      file { $subs_vcl : content => template($subs_conf) }
+  if $extra_conf {
+    case $extra_file_type {
+      'source' : {
+        file { $extra_vcl : source => $extra_conf }
+      }
+      default : {
+        file { $extra_vcl : content => template($extra_conf) }
+      }
     }
   }
 
@@ -363,20 +372,26 @@ define varnish::instance(
       -> File[$daemon_conf]
       -> File[$log_daemon_conf]
       -> File[$ncsa_log_daemon_conf]
-      -> File[$subs_vcl]
-      -> File[$main_vcl]
+      -> File[$vcl]
       -> File[$service_conf]
       -> File[$log_service_conf]
       -> File[$ncsa_log_service_conf]
+
+      if defined(File[$extra_vcl]) {
+        Service["varnish-${instance}"] -> File[$extra_vcl]
+      }
     }
     default : {
       # Setup resource ordering
       Package <| tag == 'varnish-vmod' |>
       -> File[$daemon_conf]
       -> File[$service_conf]
-      -> File[$main_vcl]
-      -> File[$subs_vcl]
+      -> File[$vcl]
       -> Service["varnish-${instance}"]
+
+      if defined(File[$extra_vcl]) {
+        File[$extra_vcl] -> Service["varnish-${instance}"]
+      }
 
       # $daemon_conf and $service_conf should do a hard restart of varnish
       File[$daemon_conf] ~> Service["varnish-${instance}"]
@@ -388,8 +403,11 @@ define varnish::instance(
       # vcl confs and vmods should do a safe reload
       Package <| tag == 'varnish-vmod' |>
       ~> Exec["varnish-${instance} safe reload"]
-      File[$main_vcl] ~> Exec["varnish-${instance} safe reload"]
-      File[$subs_vcl] ~> Exec["varnish-${instance} safe reload"]
+      File[$vcl] ~> Exec["varnish-${instance} safe reload"]
+
+      if defined(File[$extra_vcl]) {
+        File[$extra_vcl] ~> Exec["varnish-${instance} safe reload"]
+      }
 
       File[$log_daemon_conf]
       -> File[$log_service_conf]
