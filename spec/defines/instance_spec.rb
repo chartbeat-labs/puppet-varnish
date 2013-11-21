@@ -249,4 +249,272 @@ describe 'varnish::instance', :type => :define do
       }
     end
   end
+
+  describe "varnish instance with custom params" do
+    let :title do
+      'foo'
+    end
+    let :params do
+      { :ensure => 'running',
+        :init_method => 'sysvinit',
+        :backends => ['127.0.0.1:8081', '127.0.0.1:8082'],
+        :address => ['127.0.0.1:6081', '127.0.0.1:6082'],
+        :admin_address => [':6083'],
+        :purge_acls => ['"10.0.0.0"/8', '"192.168.0.1"'],
+        :varnishlog => true,
+        :varnishncsa => true,
+        :vmods => ['libvmod-throttle'],
+        :vmod_deps => ['libpcre3-dev'],
+        :nfiles => '1',
+        :memlock => '1',
+        :health_check_url => '/ping',
+        :health_check_timeout => '1s',
+        :health_check_interval => '1d',
+        :health_check_window => '2',
+        :health_check_threshold => '1',
+        :health_check_expected_response => '418',
+        :storage => ['persistent,/mnt/varnish/foo_storage.bin,70%'],
+        :default_ttl => '1',
+        :thread_pool_min => '1',
+        :thread_pool_max => '1',
+        :thread_pool_timeout => '1',
+        :auto_restart => 'off',
+        :ban_dups => 'off',
+        :ban_lurker_sleep => '1',
+        :between_bytes_timeout => '1s',
+        :cli_buffer => '1',
+        :cli_timeout => '1s',
+        :clock_skew => '1',
+        :connect_timeout => '1s',
+        :critbit_cooloff => '1',
+        :default_grace => '1',
+        :default_keep => '1',
+        :diag_bitmap => '1',
+        :esi_syntax => '1',
+        :expiry_sleep => '0',
+        :fetch_chunksize => '1',
+        :fetch_maxchunksize => '1',
+        :first_byte_timeout => '1s',
+        :gzip_level => '1',
+        :gzip_memlevel => '1',
+        :gzip_stack_buffer => '1',
+        :gzip_tmp_space => '1',
+        :gzip_window => '1',
+        :http_gzip_support => 'off',
+        :http_max_hdr => '1',
+        :http_range_support => 'off',
+        :http_req_hdr_len => '1',
+        :http_req_size => '1',
+        :http_resp_hdr_len => '1',
+        :http_resp_size => '1',
+        :listen_depth => '1',
+        :log_hashstring => 'off',
+        :log_local_address => 'on',
+        :lru_interval => '1',
+        :max_esi_depth => '1',
+        :max_restarts => '1',
+        :nuke_limit => '1',
+        :ping_interval => '1',
+        :pipe_timeout => '1s',
+        :prefer_ipv6 => 'on',
+        :queue_max => '1',
+        :rush_exponent => '1',
+        :saintmode_threshold => '1',
+        :send_timeout => '1s',
+        :sess_timeout => '1s',
+        :sess_workspace => '1',
+        :session_linger => '1',
+        :session_max => '1',
+        :shm_reclen => '1',
+        :shm_workspace => '1',
+        :shortlived => '1',
+        :syslog_cli_traffic => 'off',
+        :thread_pool_add_delay => '1',
+        :thread_pool_add_threshold => '1',
+        :thread_pool_fail_delay => '1',
+        :thread_pool_purge_delay => '1',
+        :thread_pool_stack => '1',
+        :thread_pool_workspace => '1',
+        :thread_pools => '1',
+        :thread_stats_rate => '1',
+        :vcc_err_unref => 'off',
+        :vcl_trace => 'on',
+
+      }
+    end
+    it { should contain_varnish__instance('foo').with({
+            :ensure => 'running',
+      })
+    }
+    it { should contain_package('libpcre3-dev').with({
+            :ensure => 'present',
+      })
+    }
+    it { should contain_package('libvmod-throttle').with({
+            :ensure => 'present',
+      })
+    }
+    it { should contain_file('/etc/init.d/varnish-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(/^NAME=varnishd-foo$/) \
+          .with_content(/^ulimit -n 1$/) \
+          .with_content(/^ulimit -l 1$/) \
+          .with_content(%r{/etc/default/varnish-foo})
+    }
+    it { should contain_file('/etc/init.d/varnishlog-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(/^NAME=varnishlog-foo$/)
+    }
+    it { should contain_file('/etc/init.d/varnishncsa-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(/^NAME=varnishncsa-foo$/)
+    }
+    it { should contain_file('/etc/default/varnish-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          }) \
+          .with('ensure' => 'present') \
+          .with_content(/-n foo/) \
+          .with_content(%r{-f /etc/varnish/main-foo.vcl}) \
+          .with_content(/-a 127.0.0.1:6081,127.0.0.1:6082/) \
+          .with_content(/-T :6083/) \
+          .with_content(/-t 1/) \
+          .with_content(/-w 1,1,1/) \
+          .with_content(%r{-S /etc/varnish/secret}) \
+          .with_content(%r{-s persistent,/mnt/varnish/foo_storage.bin,70%}) \
+          .with_content(/-p auto_restart=off/) \
+          .with_content(/-p ban_dups=off/) \
+          .with_content(/-p ban_lurker_sleep=1/) \
+          .with_content(/-p between_bytes_timeout=1s/) \
+          .with_content(/-p cli_buffer=1/) \
+          .with_content(/-p cli_timeout=1s/) \
+          .with_content(/-p clock_skew=1/) \
+          .with_content(/-p connect_timeout=1s/) \
+          .with_content(/-p critbit_cooloff=1/) \
+          .with_content(/-p default_grace=1/) \
+          .with_content(/-p default_keep=1/) \
+          .with_content(/-p diag_bitmap=1/) \
+          .with_content(/-p esi_syntax=1/) \
+          .with_content(/-p expiry_sleep=0/) \
+          .with_content(/-p fetch_chunksize=1/) \
+          .with_content(/-p fetch_maxchunksize=1/) \
+          .with_content(/-p first_byte_timeout=1s/) \
+          .with_content(/-p gzip_level=1/) \
+          .with_content(/-p gzip_memlevel=1/) \
+          .with_content(/-p gzip_stack_buffer=1/) \
+          .with_content(/-p gzip_tmp_space=1/) \
+          .with_content(/-p gzip_window=1/) \
+          .with_content(/-p http_gzip_support=off/) \
+          .with_content(/-p http_max_hdr=1/) \
+          .with_content(/-p http_range_support=off/) \
+          .with_content(/-p http_req_hdr_len=1/) \
+          .with_content(/-p http_req_size=1/) \
+          .with_content(/-p http_resp_hdr_len=1/) \
+          .with_content(/-p http_resp_size=1/) \
+          .with_content(/-p listen_depth=1/) \
+          .with_content(/-p log_hashstring=off/) \
+          .with_content(/-p log_local_address=on/) \
+          .with_content(/-p lru_interval=1/) \
+          .with_content(/-p max_esi_depth=1/) \
+          .with_content(/-p max_restarts=1/) \
+          .with_content(/-p nuke_limit=1/) \
+          .with_content(/-p ping_interval=1/) \
+          .with_content(/-p pipe_timeout=1s/) \
+          .with_content(/-p prefer_ipv6=on/) \
+          .with_content(/-p queue_max=1/) \
+          .with_content(/-p rush_exponent=1/) \
+          .with_content(/-p saintmode_threshold=1/) \
+          .with_content(/-p send_timeout=1s/) \
+          .with_content(/-p sess_timeout=1s/) \
+          .with_content(/-p sess_workspace=1/) \
+          .with_content(/-p session_linger=1/) \
+          .with_content(/-p session_max=1/) \
+          .with_content(/-p shm_reclen=1/) \
+          .with_content(/-p shm_workspace=1/) \
+          .with_content(/-p shortlived=1/) \
+          .with_content(/-p syslog_cli_traffic=off/) \
+          .with_content(/-p thread_pool_add_delay=1/) \
+          .with_content(/-p thread_pool_add_threshold=1/) \
+          .with_content(/-p thread_pool_fail_delay=1/) \
+          .with_content(/-p thread_pool_purge_delay=1/) \
+          .with_content(/-p thread_pool_stack=1/) \
+          .with_content(/-p thread_pool_workspace=1/) \
+          .with_content(/-p thread_pools=1/) \
+          .with_content(/-p thread_stats_rate=1/) \
+          .with_content(/-p vcc_err_unref=off/) \
+          .with_content(/-p vcl_trace=on/)
+    }
+    it { should contain_file('/etc/default/varnishlog-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          }) \
+          .with_content(/^VARNISHLOG_ENABLED=1$/)
+    }
+    it { should contain_file('/etc/default/varnishncsa-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          }) \
+          .with_content(/^VARNISHNCSA_ENABLED=1$/)
+    }
+    it { should contain_file('/etc/varnish/main-foo.vcl').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          }) \
+          .with_content(%r{.url = "/ping"}) \
+          .with_content(%r{.timeout = 1s}) \
+          .with_content(%r{.interval = 1d}) \
+          .with_content(%r{.window = 2}) \
+          .with_content(%r{.threshold = 1}) \
+          .with_content(%r{.expected_response = 418}) \
+          .with_content(/backend backend0.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8081";.*first_byte_timeout\ =\ 1s;/sm) \
+          .with_content(/backend backend1.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8082";.*first_byte_timeout\ =\ 1s;/sm) \
+          .with_content(/backend = backend0;/) \
+          .with_content(/backend = backend1;/) \
+          .with_content(/acl purge.*"10.0.0.0"\/8;.*"192.168.0.1";/sm)  \
+          .with_content(/import throttle;/) \
+          .with_content(/include "subs-foo.vcl";/)
+    }
+    it { should contain_file('/etc/varnish/subs-foo.vcl').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0644',
+          })
+    }
+    it { should contain_service("varnish-foo").with({
+            :ensure => 'running',
+            :enable => true,
+          })
+    }
+    it { should contain_service("varnishlog-foo").with({
+            :ensure => 'running',
+            :enable => true,
+          })
+    }
+    it { should contain_service("varnishlog-foo").with({
+            :ensure => 'running',
+            :enable => true,
+          })
+    }
+  end
 end
