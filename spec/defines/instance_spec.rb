@@ -186,76 +186,67 @@ describe 'varnish::instance', :type => :define do
        })
     }
 
-    it { should contain_file('/etc/init.d/varnish-default').with({
+    [ '/etc/init.d/varnish-default',
+      '/etc/init.d/varnishlog-default',
+      '/etc/init.d/varnishncsa-default',
+      '/etc/default/varnish-default',
+      '/etc/default/varnishlog-default',
+      '/etc/default/varnishncsa-default',
+      '/etc/varnish/main-default.vcl',
+      '/etc/varnish/subs-default.vcl',
+    ].each do |file|
+      it { should contain_file(file).with({
             :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0700',
           })
-    }
-    it { should contain_file('/etc/init.d/varnishlog-default').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0700',
-          })
-    }
-    it { should contain_file('/etc/init.d/varnishncsa-default').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0700',
-          })
-    }
-    it { should contain_file('/etc/default/varnish-default').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
-    }
-    it { should contain_file('/etc/default/varnishlog-default').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
-    }
-    it { should contain_file('/etc/default/varnishncsa-default').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
-    }
-    it { should contain_file('/etc/varnish/main-default.vcl').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
-    }
-    it { should contain_file('/etc/varnish/subs-default.vcl').with({
-            :ensure => 'absent',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-          })
-    }
-    it { should contain_service("varnish-default").with({
+      }
+    end
+
+    [ 'varnish-default',
+      'varnishlog-default',
+      'varnishncsa-default',
+    ].each do |service|
+      it { should contain_service(service).with({
             :ensure => 'stopped',
             :enable => false,
           })
+      }
+    end
+  end
+
+  describe 'default varnish instance installed but stopped' do
+    let :params do
+      { :ensure => 'stopped' }
+    end
+
+    it { should contain_varnish__instance('default').with({
+           'ensure' => 'stopped'
+       })
     }
-    it { should contain_service("varnishlog-default").with({
+
+    [ '/etc/init.d/varnish-default',
+      '/etc/init.d/varnishlog-default',
+      '/etc/init.d/varnishncsa-default',
+      '/etc/default/varnish-default',
+      '/etc/default/varnishlog-default',
+      '/etc/default/varnishncsa-default',
+      '/etc/varnish/main-default.vcl',
+      '/etc/varnish/subs-default.vcl',
+    ].each do |file|
+      it { should contain_file(file).with({
+            :ensure => 'present',
+          })
+      }
+    end
+
+    [ 'varnish-default',
+      'varnishlog-default',
+      'varnishncsa-default',
+    ].each do |service|
+      it { should contain_service(service).with({
             :ensure => 'stopped',
             :enable => false,
           })
-    }
-    it { should contain_service("varnishlog-default").with({
-            :ensure => 'stopped',
-            :enable => false,
-          })
-    }
+      }
+    end
   end
 end
