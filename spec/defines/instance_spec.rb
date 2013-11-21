@@ -125,7 +125,7 @@ describe 'varnish::instance', :type => :define do
             :group => 'root',
             :mode => '0644',
           }) \
-          .with_content(/^# VARNISHLOG_ENABLED=1$/)
+          .with_content(/^VARNISHLOG_ENABLED=1$/)
     }
     it { should contain_file('/etc/default/varnishncsa-default').with({
             :ensure => 'present',
@@ -133,7 +133,7 @@ describe 'varnish::instance', :type => :define do
             :group => 'root',
             :mode => '0644',
           }) \
-          .with_content(/^# VARNISHNCSA_ENABLED=1$/)
+          .with_content(/^VARNISHNCSA_ENABLED=1$/)
     }
     it { should contain_file('/etc/varnish/main-default.vcl').with({
             :ensure => 'present',
