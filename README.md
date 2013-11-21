@@ -6,7 +6,7 @@ Puppet module for varnish.
 
 Include with default parameters:
 ```
-include varnish
+varnish::instance { 'instance0' : }
 ```
 
 ## License
