@@ -13,6 +13,12 @@ describe 'instance tests' do
         r.exit_code.should be_zero
       end
     end
+
+    describe service('varnish-default') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
     it 'should safely remove itself' do
       pp = <<-EOS
         varnish::instance { 'default': ensure => 'purged' }
