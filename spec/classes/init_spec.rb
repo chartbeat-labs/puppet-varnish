@@ -29,4 +29,12 @@ describe 'varnish' do
       it { expect { should }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
   end
+  context 'invalid parameter' do
+    describe 'varnish class with invalid parameters' do
+      let :params do
+        { :foo => 'bar' }
+      end
+      it { expect { should }.to raise_error(Puppet::Error, /Invalid parameter foo/) }
+    end
+  end
 end
