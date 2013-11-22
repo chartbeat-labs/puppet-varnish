@@ -16,8 +16,8 @@ define varnish::vmod(
 ) {
   require varnish
 
-  ensure_packages($varnish::params::vmod_dependencies)
-  ensure_packages($depends)
+  ensure_resource('package', $varnish::params::vmod_dependencies)
+  ensure_resource('package', $depends)
 
   package { $name:
     ensure => $ensure

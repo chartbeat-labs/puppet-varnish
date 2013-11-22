@@ -351,7 +351,7 @@ describe 'varnish::instance', :type => :define do
       })
     }
     it { should contain_package('libpcre3-dev').with({
-            :ensure => 'present',
+            :ensure => nil,
       })
     }
     it { should contain_package('libvmod-throttle').with({
