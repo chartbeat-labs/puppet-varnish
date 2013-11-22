@@ -29,7 +29,7 @@ describe 'instance tests' do
       end
     end
   end
-  context "With 2 instances" do
+  context "with 2 instances" do
     it 'should work with no errors and be idempotent' do
       pp = <<-EOS
         varnish::instance { 'inst1': }
@@ -50,6 +50,33 @@ describe 'instance tests' do
         varnish::instance { 'inst1': ensure => 'purged' }
         varnish::instance { 'inst2': ensure => 'purged' }
       EOS
+
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+      end
+    end
+  end
+  context "with a dependent package installed by another means" do
+    it 'should work with no errors and be idempotent' do
+      pp = <<-EOS
+        package { 'git-core':
+          ensure => 'installed',
+          before => Varnish::Instance[inst1],
+        }
+        varnish::instance { 'inst1': }
+      EOS
+
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+        r.refresh
+        r.exit_code.should be_zero
+      end
+    end
+    it 'should safely remove itself' do
+      pp = <<-EOF
+        package { 'git-core': ensure => 'purged' }
+        varnish::instance { 'inst1': ensure => 'purged' }
+      EOF
 
       puppet_apply(pp) do |r|
         r.exit_code.should == 2
