@@ -274,9 +274,11 @@ define varnish::instance(
 
   # Optional Vmods
   varnish::vmod { $vmods :
-    ensure   => $package_ensure,
-    depends  => $vmod_deps,
-    tag      => 'varnish-vmod',
+    ensure  => $package_ensure,
+    depends => $vmod_deps,
+    tag     => 'varnish-vmod',
+    before  => Service["varnish-${instance}"],
+    notify  => Exec["varnish-${instance} safe reload"],
   }
 
   # Config files
@@ -382,9 +384,7 @@ define varnish::instance(
       }
     }
     default : {
-      # Setup resource ordering
-      Package <| tag == 'varnish-vmod' |>
-      -> File[$daemon_conf]
+      File[$daemon_conf]
       -> File[$service_conf]
       -> File[$vcl]
       -> Service["varnish-${instance}"]
@@ -400,9 +400,7 @@ define varnish::instance(
       # Ensure the service is running before any calls to safe reload
       Service["varnish-${instance}"] -> Exec["varnish-${instance} safe reload"]
 
-      # vcl confs and vmods should do a safe reload
-      Package <| tag == 'varnish-vmod' |>
-      ~> Exec["varnish-${instance} safe reload"]
+      # vcl confs should do a safe reload
       File[$vcl] ~> Exec["varnish-${instance} safe reload"]
 
       if defined(File[$extra_vcl]) {
@@ -411,11 +409,15 @@ define varnish::instance(
 
       File[$log_daemon_conf]
       -> File[$log_service_conf]
-      ~> Service["varnishlog-${instance}"]
+
+      File[$log_daemon_conf] ~> Service["varnishlog-${instance}"]
+      File[$log_service_conf] ~> Service["varnishlog-${instance}"]
 
       File[$ncsa_log_daemon_conf]
       -> File[$ncsa_log_service_conf]
-      ~> Service["varnishncsa-${instance}"]
+
+      File[$ncsa_log_daemon_conf] ~> Service["varnishncsa-${instance}"]
+      File[$ncsa_log_service_conf] ~> Service["varnishncsa-${instance}"]
     }
   }
 }
