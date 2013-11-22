@@ -157,6 +157,17 @@ define varnish::instance(
 ) {
   require varnish
 
+  # Assign a more intuitive variable
+  $instance = $name
+
+  # Instance variables
+  $daemon_conf = "/etc/default/varnish-${instance}"
+  $log_daemon_conf = "/etc/default/varnishlog-${instance}"
+  $ncsa_log_daemon_conf = "/etc/default/varnishncsa-${instance}"
+  $vcl = "/etc/varnish/${instance}.vcl"
+  $extra_vcl = "/etc/varnish/${instance}-extra.vcl"
+
+  # Validations
   validate_bool($varnishlog, $varnishncsa)
 
   # Determine whether it's a fileserver path or template path.
@@ -218,17 +229,6 @@ define varnish::instance(
     $ncsa_log_service_ensure = 'stopped'
     $ncsa_log_service_enable = false
   }
-
-
-  # Assign a more intuitive variable
-  $instance = $name
-
-  # Instance variables
-  $daemon_conf = "/etc/default/varnish-${instance}"
-  $log_daemon_conf = "/etc/default/varnishlog-${instance}"
-  $ncsa_log_daemon_conf = "/etc/default/varnishncsa-${instance}"
-  $vcl = "/etc/varnish/${instance}.vcl"
-  $extra_vcl = "/etc/varnish/${instance}-extra.vcl"
 
   # Determine init method
   case $init_method {
