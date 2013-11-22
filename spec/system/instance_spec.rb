@@ -1,15 +1,53 @@
 require 'spec_helper_system'
 
-describe 'instance test: 1 instance' do
-  it 'define should work without errors' do
-    pp = <<-EOS
-      varnish::instance { 'default': }
-    EOS
+describe 'instance tests' do
+  context "with 1 instance" do
+    it 'should work with no errors and be idempotent' do
+      pp = <<-EOS
+        varnish::instance { 'default': }
+      EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-      r.refresh
-      r.exit_code.should be_zero
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+        r.refresh
+        r.exit_code.should be_zero
+      end
+    end
+    it 'should safely remove itself' do
+      pp = <<-EOS
+        varnish::instance { 'default': ensure => 'purged' }
+      EOS
+
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+      end
+    end
+  end
+  context "With 2 instances" do
+    it 'should work with no errors and be idempotent' do
+      pp = <<-EOS
+        varnish::instance { 'inst1': }
+        varnish::instance { 'inst2':
+          address => [ ':6083' ],
+          admin_address => '127.0.0.1:6084',
+        }
+      EOS
+
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+        r.refresh
+        r.exit_code.should be_zero
+      end
+    end
+    it 'should safely remove itself' do
+      pp = <<-EOS
+        varnish::instance { 'inst1': ensure => 'purged' }
+        varnish::instance { 'inst2': ensure => 'purged' }
+      EOS
+
+      puppet_apply(pp) do |r|
+        r.exit_code.should == 2
+      end
     end
   end
 end
