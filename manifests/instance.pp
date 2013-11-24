@@ -258,7 +258,7 @@ define varnish::instance(
   # Determine storage file
   if empty($storage) {
     $storage_real = [
-      "file,/var/lib/varnish/${instance}_storage.bin,70%"
+      "file,/var/lib/varnish/${instance}/varnish_storage.bin,70%"
     ]
   } else {
     $storage_real = $storage
