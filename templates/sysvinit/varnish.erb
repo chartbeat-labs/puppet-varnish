@@ -46,7 +46,6 @@ export PATH="${PATH:+$PATH:}/usr/sbin:/usr/bin:/sbin:/bin"
 make_storage_dirs() {
     storage_files=$(echo ${DAEMON_OPTS} | egrep -o -- '-s( (file|persistent),[^,]+)' | cut -d, -f2)
     for file in $storage_files; do
-        echo mkdir -p $(dirname $file)
         mkdir -p $(dirname $file)
     done
 }
