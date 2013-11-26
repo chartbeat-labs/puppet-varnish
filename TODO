@@ -1,1 +1,2 @@
 * Add Upstart and Runit service support
+* Update puppet doc parameters in varnish::instance
