@@ -73,7 +73,7 @@ default vcl conf further, but also retaining much of the scaffolding present
 in the default vcl conf. When multiple subroutines are defined in varnish,
 varnish will concatentate them together, for example:
 
-```puppet
+```
 vcl_recv {
     if (req.restarts == 0) {
         if (req.http.x-forwarded-for) {
