@@ -1,10 +1,1 @@
-* Add additional system tests.
-* Test out custom puppet.conf, see https://github.com/nanliu/rspec-puppet/commit/cbc3a77949d54df4267c4d8bbcf12d71fbecfa1f.
-* Test out parser = future if above works out.
-* Figure out how to handle parent directories of the storage files if the above does not.
-* Test out inserting dependencies in system tests, e.g.
-  class { 'varnish': }
-  file { '/tmp/foo':
-    require => Class[varnish::install]
-    notity => Class[varnish::service]
 * Add Upstart and Runit service support
