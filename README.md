@@ -5,12 +5,12 @@ Puppet module for varnish.
 ## Example usage
 
 Include with default parameters:
-```
+```puppet
 varnish::instance { 'instance0' : }
 ```
 
 Include with multiple different storage types:
-```
+```puppet
 varnish::instance { 'instance0' :
   storage_file => ['file,/mnt/varnish/instance0/varnish_storage.bin,70%',
                    'persistent,/data/varnish/varnish_storage.bin,20%']
@@ -23,9 +23,9 @@ increase the thread pool max size you could specify that as a param.
 
 All of the parameters are set to the defaults as defined in varnishd(1)
 
-```
+```puppet
 varnish::instance { 'instance0' :
-  thread_pool_max => 1500,
+  thread_pool_max => '1500',
 }
 ```
 
@@ -38,7 +38,7 @@ source, but that would require a custom provider which is not yet built.
 To ensure that a given varnish::instance has the throttle vmod installed
 that it needs:
 
-```
+```puppet
 varnish::instance { 'instance0' :
   vmods => ['libvmod-throttle'],
 }
@@ -49,7 +49,7 @@ varnish::instance { 'instance0' :
 The varnish::instance type ships with a pretty simple config. You can pass
 in your own vcl config by just specifying the following:
 
-```
+```puppet
 varnish::instance { 'instance0' :
   vcl_conf => 'puppet:///path/to/config/file.vcl',
 }
@@ -57,7 +57,7 @@ varnish::instance { 'instance0' :
 
 Or if your config is a template, you can do that as well:
 
-```
+```puppet
 varnish::instance { 'instance0' :
   vcl_conf => 'path/to/template/file.vcl.erb',
 }
@@ -73,7 +73,7 @@ default vcl conf further, but also retaining much of the scaffolding present
 in the default vcl conf. When multiple subroutines are defined in varnish,
 varnish will concatentate them together, for example:
 
-```
+```puppet
 vcl_recv {
     if (req.restarts == 0) {
         if (req.http.x-forwarded-for) {
@@ -114,7 +114,7 @@ module has no return statements (except for the PURGE request) so you can
 safely **append** your custom vcl configurations by just passing them in
 as extra_conf.
 
-```
+```puppet
 varnish::instance { 'instance0' :
   extra_conf => 'puppet:///path/to/extra/conf.vcl'
 }
