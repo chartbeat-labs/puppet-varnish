@@ -122,4 +122,17 @@ varnish::instance { 'instance0' :
 
 ### Testing
 
+This module uses rspec-puppet, rspec-puppet-system and rspec-system-serverspec.
+To use test, install the required gems through [Bundler](http://bundler.io).
+
+```shell
+$ git clone git://github.com/chartbeat/puppet-varnish.git
+$ cd puppet-varnish
+$ bundle install
+$ bundle exec rake spec
+$ bundle exec rake spec:system
+```
+
+To perform spec:system tests, you'll need [Vagrant](http://vagrantup.com) installed.
+
 See [LICENSE](LICENSE) file.
