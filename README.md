@@ -1,8 +1,8 @@
-# varnish
+# Varnish
 
 Puppet module for varnish.
 
-## Example usage
+### Example usage
 
 Include with default parameters:
 ```puppet
@@ -29,7 +29,7 @@ varnish::instance { 'instance0' :
 }
 ```
 
-## VMODS
+### VMODS
 
 The varnish::instance class supports installing vmods. Currently it expects
 them to be installed via APT. There are plans to support building it from
@@ -44,7 +44,7 @@ varnish::instance { 'instance0' :
 }
 ```
 
-## Configs
+### Configs
 
 The varnish::instance type ships with a pretty simple config. You can pass
 in your own vcl config by just specifying the following:
@@ -66,7 +66,7 @@ varnish::instance { 'instance0' :
 **Note that if you pass in your own config, you'll have to handle the backend
 configuration, backend probes, vmod imports, acls yourself**
 
-### Extra conf
+#### Extra conf
 
 There is an extra_conf parameter that you can use as a way to customize the
 default vcl conf further, but also retaining much of the scaffolding present
@@ -119,5 +119,7 @@ varnish::instance { 'instance0' :
   extra_conf => 'puppet:///path/to/extra/conf.vcl'
 }
 ```
+
+### Testing
 
 See [LICENSE](LICENSE) file.
