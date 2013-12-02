@@ -62,7 +62,7 @@ describe 'varnish::instance', :type => :define do
           .with_content(/-t 120/) \
           .with_content(/-w 5,500,300/) \
           .with_content(%r{-S /etc/varnish/secret}) \
-          .with_content(%r{-s file,/var/lib/varnish/default_storage.bin,70%}) \
+          .with_content(%r{-s file,/var/lib/varnish/default/varnish_storage.bin,70%}) \
           .with_content(/-p auto_restart=on/) \
           .with_content(/-p ban_dups=on/) \
           .with_content(/-p ban_lurker_sleep=0.01/) \
