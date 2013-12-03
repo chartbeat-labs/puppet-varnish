@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'varnish::repo' do
+describe 'varnish', :type => :class do
   describe 'varnish::repo class on Debian' do
     let(:facts) {{
       :osfamily => 'Debian',
@@ -23,11 +23,11 @@ describe 'varnish::repo' do
 
     context 'with parameters specified' do
       let(:params) {{
-        :location => 'http://example.com/debian',
-        :repos => 'main',
-        :key => 'XXXXXXX',
-        :key_source => 'http://example.com/foo.txt',
-        :include_src => false,
+        :apt_location => 'http://example.com/debian',
+        :apt_repos => 'main',
+        :apt_key => 'XXXXXXX',
+        :apt_key_source => 'http://example.com/foo.txt',
+        :apt_include_src => false,
       }}
 
       it { should contain_apt__source('varnish-cache').with({

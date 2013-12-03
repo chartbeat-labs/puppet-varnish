@@ -1,8 +1,9 @@
 require 'spec_helper'
 
-describe 'varnish::install' do
+describe 'varnish', :type => :class do
   let(:facts) {{
-    :osfamily => 'Debian'
+    :osfamily => 'Debian',
+    :lsbdistcodename => 'precise',
   }}
 
   context 'with no parameters' do
@@ -12,14 +13,24 @@ describe 'varnish::install' do
         :ensure => 'present',
       })
     }
+
+    it { should contain_package('libvarnishapi1').with({
+        :ensure => 'present',
+      })
+    }
   end
 
   context 'with ensure parameter' do
     let(:params) {{
-      :ensure => '3.0.4-1'
+      :package_ensure => '3.0.4-1'
     }}
 
     it { should contain_package('varnish').with({
+        :ensure => '3.0.4-1',
+      })
+    }
+
+    it { should contain_package('libvarnishapi1').with({
         :ensure => '3.0.4-1',
       })
     }

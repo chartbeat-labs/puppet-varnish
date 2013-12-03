@@ -15,16 +15,14 @@ include varnish
 If you want to modify which version of varnish you want to run, there are
 currently two supported methods.
 
-*Method 1*: Use a resource collector on the tag of the varnish packages
-
+*Class Parameters*
 ```puppet
-Package <| tag == 'varnish-install' |> {
-  ensure => '1.2.3'
+class { 'varnish' :
+  package_ensure => '1.2.3',
 }
 ```
 
-*Method 2*: Use hiera specifying this key/value pair
-
+*Hiera*
 ```
 ---
 varnish::package_ensure: '1.2.3'
@@ -74,18 +72,18 @@ varnish::instance { 'instance0' :
 
 This varnish module currently uses the public repo.varnish-cache.org debian
 repository. If you want to use another repo, you can do it like the varnish
-package above, with a resource collector or hiera.
+package above, with class parameters or hiera.
 
-*Resource Collector*:
+*Class Parameters*
 ```puppet
-Apt::Source <| title == 'varnish-cache' |> {
-  location => 'http://some.other.repo',
-  repos => 'repo-name',
+class { 'varnish' :
+  apt_location => 'http://some.other.repo',
+  apt_repos    => 'main restricted universe',
   ...
 }
 ```
 
-*Hiera*:
+*Hiera*
 ```
 ---
 varnish::apt_location: 'http://some.other/repo'

@@ -1,9 +1,12 @@
 # == Class varnish::install
 #
-class varnish::install(
-  $packages = hiera('varnish::packages', $varnish::params::packages),
-  $ensure = hiera('varnish::package_ensure', $varnish::params::package_ensure),
-) inherits varnish::params {
+# This class is called from varnish. It installs necessary packages. It will
+# fail if called on it's own.
+#
+class varnish::install {
+
+  $packages = $::varnish::packages
+  $ensure = $::varnish::package_ensure
 
   package { $packages :
     ensure => $ensure,
