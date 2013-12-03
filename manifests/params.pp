@@ -6,7 +6,7 @@
 class varnish::params {
   case $::osfamily {
     'Debian': {
-      $package_name = 'varnish'
+      $packages = ['varnish','libvarnishapi1']
       $package_ensure = 'present'
       $service_name = 'varnish'
       $vmod_dependencies = ['build-essential', 'dpkg-dev', 'libtool',

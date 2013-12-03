@@ -4,6 +4,32 @@ Puppet module for varnish.
 
 ### Example usage
 
+The base class just installs varnish and stops the service. This is because
+varnish services are created in the varnish::instance defined type.
+
+If you just want to install the varnish package but don't want it running:
+```puppet
+include varnish
+```
+
+If you want to modify which version of varnish you want to run, there are
+currently two supported methods.
+
+*Method 1*: Use a resource collector on the tag of the varnish packages
+
+```puppet
+Package <| tag == 'varnish-install' |> {
+  ensure => '1.2.3'
+}
+```
+
+*Method 2*: Use hiera specifying this key/value pair
+
+```
+---
+varnish::package_ensure: '1.2.3'
+```
+
 Include with default parameters:
 ```puppet
 varnish::instance { 'instance0' : }
@@ -42,6 +68,31 @@ that it needs:
 varnish::instance { 'instance0' :
   vmods => ['libvmod-throttle'],
 }
+```
+
+### Repo
+
+This varnish module currently uses the public repo.varnish-cache.org debian
+repository. If you want to use another repo, you can do it like the varnish
+package above, with a resource collector or hiera.
+
+*Resource Collector*:
+```puppet
+Apt::Source <| title == 'varnish-cache' |> {
+  location => 'http://some.other.repo',
+  repos => 'repo-name',
+  ...
+}
+```
+
+*Hiera*:
+```
+---
+varnish::apt_location: 'http://some.other/repo'
+varnish::apt_repos: 'repo-name'
+varnish::apt_key: 'XXXXXX'
+varnish::key_source: 'http://some.other/key.txt'
+varnish::apt_include_src: false
 ```
 
 ### Configs

@@ -9,14 +9,36 @@ describe 'varnish::repo' do
 
     it { should include_class('apt') }
 
-    it { should contain_apt__source('varnish-cache').with({
-        'location' => 'http://repo.varnish-cache.org/debian/',
+    context 'with no parameters' do
+      it { should contain_apt__source('varnish-cache').with({
+          'location' => 'http://repo.varnish-cache.org/debian/',
+          'release' => 'precise',
+          'repos' => 'varnish-3.0',
+          'key' => 'C4DEFFEB',
+          'key_source' => 'http://repo.varnish-cache.org/debian/GPG-key.txt',
+          'include_src' => true,
+        })
+      }
+    end
+
+    context 'with parameters specified' do
+      let(:params) {{
+        :location => 'http://example.com/debian',
+        :repos => 'main',
+        :key => 'XXXXXXX',
+        :key_source => 'http://example.com/foo.txt',
+        :include_src => false,
+      }}
+
+      it { should contain_apt__source('varnish-cache').with({
+        'location' => 'http://example.com/debian',
         'release' => 'precise',
-        'repos' => 'varnish-3.0',
-        'key' => 'C4DEFFEB',
-        'key_source' => 'http://repo.varnish-cache.org/debian/GPG-key.txt',
-        'include_src' => true,
-      })
-    }
+        'repos' => 'main',
+        'key' => 'XXXXXXX',
+        'key_source' => 'http://example.com/foo.txt',
+        'include_src' => false,
+        })
+      }
+    end
   end
 end
