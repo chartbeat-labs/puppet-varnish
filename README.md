@@ -2,6 +2,8 @@
 
 Puppet module for varnish.
 
+[![Build Status](https://travis-ci.org/butlern/puppet-varnish.png)](https://travis-ci.org/butlern/puppet-varnish)
+
 ### Example usage
 
 The base class just installs varnish and stops the service. This is because
