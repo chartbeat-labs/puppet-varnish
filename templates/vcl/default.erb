@@ -176,8 +176,10 @@ sub vcl_deliver {
     if (obj.hits > 0) {
         set resp.http.X-Cache = "HIT";
         set resp.http.X-Cache-Hits = obj.hits;
+        std.log ("HIT: Num Hits=" + obj.hits + " for url " + req.url);
     } else {
         set resp.http.X-Cache = "MISS";
+        std.log ("MISS: for url " + req.url);
     }
 
     set resp.http.X-BackEnd = req.backend;
