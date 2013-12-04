@@ -2,6 +2,8 @@
 
 Puppet module for varnish.
 
+[![Build Status](https://travis-ci.org/butlern/puppet-varnish.png)](https://travis-ci.org/butlern/puppet-varnish)
+
 ### Example usage
 
 The base class just installs varnish and stops the service. This is because
@@ -172,7 +174,7 @@ varnish::instance { 'instance0' :
 ### Testing
 
 This module uses rspec-puppet, rspec-puppet-system and rspec-system-serverspec.
-To use test, install the required gems through [Bundler](http://bundler.io).
+To test, install the required gems through [Bundler](http://bundler.io).
 
 ```shell
 $ git clone git://github.com/chartbeat/puppet-varnish.git

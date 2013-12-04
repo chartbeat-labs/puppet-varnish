@@ -13,3 +13,7 @@ gem 'rspec-system-puppet'
 gem 'rspec-system-serverspec'
 gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
+
+# Needed since puppet 2.7 doesn't include hiera
+gem 'hiera' if ENV['PUPPET_VERSION'] =~ /2.7/
+gem 'hiera-puppet' if ENV['PUPPET_VERSION'] =~ /2.7/
