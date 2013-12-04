@@ -36,7 +36,7 @@ probe backend_health_check {
       [ host, '80' ]
     end
   end
-  backends.enum_with_index do |v,i|
+  backends.each_with_index do |v,i|
 -%>
 backend backend<%= i %> {
     .host = "<%= v[0] %>";
