@@ -172,7 +172,7 @@ varnish::instance { 'instance0' :
 ### Testing
 
 This module uses rspec-puppet, rspec-puppet-system and rspec-system-serverspec.
-To use test, install the required gems through [Bundler](http://bundler.io).
+To test, install the required gems through [Bundler](http://bundler.io).
 
 ```shell
 $ git clone git://github.com/chartbeat/puppet-varnish.git
