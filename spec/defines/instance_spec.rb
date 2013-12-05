@@ -153,14 +153,15 @@ describe 'varnish::instance', :type => :define do
             :before => 'Service[varnish-default]',
             :notify => 'Exec[varnish-default safe reload]',
           }) \
-          .with_content(%r{.url = "/alive"}) \
-          .with_content(%r{.timeout = 300ms}) \
-          .with_content(%r{.interval = 1s}) \
-          .with_content(%r{.window = 10}) \
-          .with_content(%r{.threshold = 6}) \
+          .with_content(%r{.url = "/"}) \
+          .with_content(%r{.timeout = 2s}) \
+          .with_content(%r{.interval = 5s}) \
+          .with_content(%r{.window = 8}) \
+          .with_content(%r{.threshold = 3}) \
           .with_content(%r{.expected_response = 200}) \
           .with_content(/backend backend0.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8080";.*first_byte_timeout\ =\ 60s;/sm) \
           .with_content(/backend = backend0;/) \
+          .with_content(/director default round-robin/) \
           .with_content(/acl purge \{\n\s*"localhost";\n\}/m)
     }
     it { should_not contain_file('/etc/varnish/default-extra.vcl') }
@@ -272,12 +273,14 @@ describe 'varnish::instance', :type => :define do
         :nfiles => '1',
         :memlock => '1',
         :health_check_url => '/ping',
+        :health_check_request => ["GET / HTTP/1.1","Host: www.foo.bar","Connection: close"],
         :health_check_timeout => '1s',
         :health_check_interval => '1d',
         :health_check_window => '2',
         :health_check_threshold => '1',
         :health_check_expected_response => '418',
         :storage => ['persistent,/mnt/varnish/foo_storage.bin,70%'],
+        :lb_method => 'random',
         :default_ttl => '1',
         :thread_pool_min => '1',
         :thread_pool_max => '1',
@@ -490,7 +493,10 @@ describe 'varnish::instance', :type => :define do
             :group => 'root',
             :mode => '0644',
           }) \
-          .with_content(%r{.url = "/ping"}) \
+          .with_content(%r{.request =}) \
+          .with_content(%r{        "GET / HTTP/1.1"}) \
+          .with_content(%r{        "Host: www.foo.bar"}) \
+          .with_content(%r{        "Connection: close";}) \
           .with_content(%r{.timeout = 1s}) \
           .with_content(%r{.interval = 1d}) \
           .with_content(%r{.window = 2}) \
@@ -500,6 +506,7 @@ describe 'varnish::instance', :type => :define do
           .with_content(/backend backend1.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8082";.*first_byte_timeout\ =\ 1s;/sm) \
           .with_content(/backend = backend0;/) \
           .with_content(/backend = backend1;/) \
+          .with_content(/director default random/) \
           .with_content(/acl purge.*"10.0.0.0"\/8;.*"192.168.0.1";/sm)  \
           .with_content(/import throttle;/) \
           .with_content(/include "foo-extra.vcl";/)

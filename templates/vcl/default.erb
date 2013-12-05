@@ -16,7 +16,12 @@
 # Probe
 # ************************************************************
 probe backend_health_check {
+<% if @health_check_request -%>
+    .request =
+<%= @health_check_request.map { |r| %(#{"\ " * 8}"#{r}")}.join("\n") + ";" %>
+<% else -%>
     .url = "<%= @health_check_url %>";
+<% end -%>
     .timeout = <%= @health_check_timeout %>;
     .interval = <%= @health_check_interval %>;
     .window = <%= @health_check_window %>;
@@ -63,7 +68,7 @@ backend fail {
 # ************************************************************
 # Director
 # ************************************************************
-director default round-robin {
+director default <%= @lb_method %> {
 <% backends.each_index do |i| -%>
     { .backend = backend<%= i %>; }
 <% end -%>

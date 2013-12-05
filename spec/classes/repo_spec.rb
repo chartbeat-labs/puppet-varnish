@@ -7,7 +7,7 @@ describe 'varnish', :type => :class do
       :lsbdistcodename => 'precise',
     }}
 
-    it { should include_class('apt') }
+    it { should contain_class('apt') }
 
     context 'with no parameters' do
       it { should contain_apt__source('varnish-cache').with({
