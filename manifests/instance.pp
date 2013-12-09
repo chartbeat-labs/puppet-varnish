@@ -66,6 +66,55 @@
 # [*memlock*]
 #   Maximum locked memory size for shared memory log
 #
+# [*health_check_url*]
+#   Specify a URL to request from the backend. Defaults to "/".
+#
+# [*health_check_request*]
+#   Specify a full HTTP request using multiple strings. .request will have \r\n
+#   automatically inserted after every string.  If specified, .request will take
+#   precedence over .url.
+#
+# [*health_check_timeout*]
+#   How fast each probe times out. Default is 2 seconds.
+#
+# [*health_check_interval*]
+#   Defines how often the probe should check the backend. Default is every 5
+#   seconds.
+#
+# [*health_check_window*]
+#   How many of the latest polls we examine to determine backend health.
+#   Defaults to 8.
+#
+# [*health_check_threshold*]
+#   How many of the polls in .window must have succeeded for us to consider the
+#   backend healthy. Defaults to 3.
+#
+# [*health_check_expected_response*]
+#   The expected backend HTTP response code. Defaults to 200.
+#
+# [*lb_method*]
+#   The load balancing method of the director. Defaults to round-robin. Possible
+#   values are random, client, hash, round-robin, and fallback. You can specify
+#   dns but the additional options to the dns director are not supported at this
+#   time. Patches are welcome. Or you can just override the main template with
+#   your own. Read vcl(7) for more info.
+#
+# [*storage*]
+#   An Array of storage types. Current storage types are malloc, file,
+#   persistent and transient. If you specify file or persistent, you will need
+#   to specify the file path to the varnish_storage.bin file and either the size
+#   of the file in K, M, G, or T or a percentage of the size of the filesystem.
+#
+#   Examples:
+#     file,/var/lib/varnish/varnish_storage.bin,700M
+#     persistent,/var/lib/varnish/varnish_storage.bin,60%
+#
+#   Please read varnishd(1) for more information.
+#
+# [*remaining options*]
+#   The remaining options are all standard varnishd run time prameters, please
+#   check out varnishd(1) for documenation.
+#
 define varnish::instance(
   $ensure = 'running',
   $init_method = 'sysvinit',
@@ -82,12 +131,14 @@ define varnish::instance(
   $vmod_deps = [],
   $nfiles = '131072',
   $memlock = '82000',
-  $health_check_url = '/alive',
-  $health_check_timeout = '300ms',
-  $health_check_interval = '1s',
-  $health_check_window = '10',
-  $health_check_threshold = '6',
+  $health_check_url = '/',
+  $health_check_request = undef,
+  $health_check_timeout = '2s',
+  $health_check_interval = '5s',
+  $health_check_window = '8',
+  $health_check_threshold = '3',
   $health_check_expected_response = '200',
+  $lb_method = 'round-robin',
   $storage = [],
   $default_ttl = '120',
   $thread_pool_min = '5',

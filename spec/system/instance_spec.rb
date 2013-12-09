@@ -122,3 +122,22 @@ describe 'instance install: purged instance should not remove package' do
     it { should be_installed }
   end
 end
+
+describe 'instance install with custom request' do
+  it 'should work with no errors and be idempotent' do
+    pp = <<-EOS
+      varnish::instance { 'custom_request' :
+        health_check_request => [ 'GET / HTTP/1.1',
+                                  'Host: foo.bar.com',
+                                  'Connection: close'
+                                ]
+      }
+    EOS
+
+    puppet_apply(pp) do |r|
+      r.exit_code.should == 2
+      r.refresh
+      r.exit_code.should be_zero
+    end
+  end
+end
