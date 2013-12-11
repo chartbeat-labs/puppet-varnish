@@ -99,6 +99,23 @@
 #   time. Patches are welcome. Or you can just override the main template with
 #   your own. Read vcl(7) for more info.
 #
+# [*healthy_grace*]
+#   This is the amount of time that we will serve a stale object when fetching
+#   a fresh object from the backend. Examples, 5s, 2m, 4h, 1d.
+#
+# [*unhealthy_grace*]
+#   This value affects both vcl_recv and vcl_fetch. So it means 2 different
+#   things but ideally these values should be the same. For vcl_recv, it means
+#   that this is amount of time we will serve a stale object when the backend is
+#   unhealthy. In vcl_fetch it is the amount of time to keep a stale object in
+#   cache. Examples, 5s, 2m, 4h, 1d.
+#
+# [*saintmode_blacklist*]
+#   This is the amount of time to blacklist an unhealthy backend. This is needed
+#   if the backend's health check is good but requests for resources return
+#   50x's. This will ban varnish from fetching from a failing backend for an
+#   amount of time. Default is 20s.
+#
 # [*storage*]
 #   An Array of storage types. Current storage types are malloc, file,
 #   persistent and transient. If you specify file or persistent, you will need
@@ -139,6 +156,9 @@ define varnish::instance(
   $health_check_threshold = '3',
   $health_check_expected_response = '200',
   $lb_method = 'round-robin',
+  $healthy_grace = '30s',
+  $unhealthy_grace = '4h',
+  $saintmode_blacklist = '20s',
   $storage = [],
   $default_ttl = '120',
   $thread_pool_min = '5',

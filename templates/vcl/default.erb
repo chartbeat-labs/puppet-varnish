@@ -110,10 +110,10 @@ sub vcl_recv {
 
     # Set Grace. This is the amount of time that we will serve stale content.
     if (req.backend.healthy) {
-       set req.grace = 30s;
+       set req.grace = <%= @healthy_grace %>;
        std.log ("[Receive] " + req.url + "(Back-end " + req.backend + " healthy, Grace: " + req.grace + ")");
     } else {
-       set req.grace = 24h;
+       set req.grace = <%= @unhealthy_grace %>;
        std.log ("[Receive] " + req.url + "(Back-end " + req.backend + " unhealthy, Grace: " + req.grace + ")");
     }
 
@@ -163,13 +163,13 @@ sub vcl_miss {
 
 sub vcl_fetch {
     if (beresp.status >= 500) {
-        set beresp.saintmode = 20s;
+        set beresp.saintmode = <%= @saintmode_blacklist %>;
         std.log ("[Fetch ] " + bereq.url + " (Saint: 20s)");
         return(restart);
     }
 
     # Set Grace. Determines how long objects are kept in cache after they expire
-    set beresp.grace = 24h;
+    set beresp.grace = <%= @unhealthy_grace %>;
 
     set beresp.http.X-Cacheable = "YES";
 
