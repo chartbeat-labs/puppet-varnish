@@ -162,7 +162,11 @@ describe 'varnish::instance', :type => :define do
           .with_content(/backend backend0.*host\ =\ "127\.0\.0\.1";.*port\ =\ "8080";.*first_byte_timeout\ =\ 60s;/sm) \
           .with_content(/backend = backend0;/) \
           .with_content(/director default round-robin/) \
-          .with_content(/acl purge \{\n\s*"localhost";\n\}/m)
+          .with_content(/acl purge \{\n\s*"localhost";\n\}/m) \
+          .with_content(/set req.grace = 30s;/) \
+          .with_content(/set req.grace = 4h;/) \
+          .with_content(/set beresp.grace = 4h;/) \
+          .with_content(/set beresp.saintmode = 20s;/)
     }
     it { should_not contain_file('/etc/varnish/default-extra.vcl') }
     it { should contain_service("varnish-default").with({
@@ -281,6 +285,9 @@ describe 'varnish::instance', :type => :define do
         :health_check_expected_response => '418',
         :storage => ['persistent,/mnt/varnish/foo_storage.bin,70%'],
         :lb_method => 'random',
+        :healthy_grace => '1d',
+        :unhealthy_grace => '2d',
+        :saintmode_blacklist => '3d',
         :default_ttl => '1',
         :thread_pool_min => '1',
         :thread_pool_max => '1',
@@ -509,7 +516,11 @@ describe 'varnish::instance', :type => :define do
           .with_content(/director default random/) \
           .with_content(/acl purge.*"10.0.0.0"\/8;.*"192.168.0.1";/sm)  \
           .with_content(/import throttle;/) \
-          .with_content(/include "foo-extra.vcl";/)
+          .with_content(/include "foo-extra.vcl";/) \
+          .with_content(/set req.grace = 1d;/) \
+          .with_content(/set req.grace = 2d;/) \
+          .with_content(/set beresp.grace = 2d;/) \
+          .with_content(/set beresp.saintmode = 3d;/)
     }
     it { should contain_file('/etc/varnish/foo-extra.vcl').with({
             :ensure => 'present',
