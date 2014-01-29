@@ -2,7 +2,7 @@
 
 Puppet module for varnish.
 
-[![Build Status](https://travis-ci.org/butlern/puppet-varnish.png)](https://travis-ci.org/butlern/puppet-varnish)
+[![Build Status](https://travis-ci.org/chartbeat-labs/puppet-varnish.png)](https://travis-ci.org/chartbeat-labs/puppet-varnish)
 
 ### Example usage
 
