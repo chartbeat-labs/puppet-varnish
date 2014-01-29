@@ -1,2 +1,10 @@
+2013-12-11 Relase 0.0.2
+- Add parameters to configure saintmode and grace times
+- Add lb_method and health_check_request support
+- Add some hit/miss logging through std.log
+- Fix bugs between ruby 1.8 and 1.9
+- Update class parameters, confine to init class
+- Add support for parameter overrides
+
 2013-11-26 Release 0.0.1
 - Initial release of puppet-varnish module
