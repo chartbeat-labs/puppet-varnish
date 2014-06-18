@@ -1,5 +1,5 @@
 name          'chartbeat-varnish'
-version       '0.0.2'
+version       '0.0.3'
 source        'https://github.com/chartbeat-labs/puppet-varnish'
 author        'chartbeat'
 license       'MIT'
