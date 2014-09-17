@@ -144,6 +144,8 @@ define varnish::instance(
   $purge_acls = ['"localhost"'],
   $varnishlog = false,
   $varnishncsa = false,
+  $ncsa_log_format = '-f',
+  $logdir = '/var/log/varnish',
   $vmods = [],
   $vmod_deps = [],
   $nfiles = '131072',
