@@ -169,6 +169,23 @@ describe 'varnish::instance', :type => :define do
           .with_content(/set beresp.saintmode = 20s;/)
     }
     it { should_not contain_file('/etc/varnish/default-extra.vcl') }
+    it { should contain_file('/etc/init.d/varnishlog-default').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(%r{LOGFILE=/var/log/varnish/\$NAME.log})
+    }
+    it { should contain_file('/etc/init.d/varnishncsa-default').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(%r{LOGFILE=/var/log/varnish/\$NAME.log}) \
+          .with_content(/LOGFORMAT='-f'/)
+    }
     it { should contain_service("varnish-default").with({
             :ensure => 'running',
             :enable => true,
@@ -179,7 +196,7 @@ describe 'varnish::instance', :type => :define do
             :enable => false,
           })
     }
-    it { should contain_service("varnishlog-default").with({
+    it { should contain_service("varnishncsa-default").with({
             :ensure => 'stopped',
             :enable => false,
           })
@@ -272,6 +289,8 @@ describe 'varnish::instance', :type => :define do
         :extra_conf => 'puppet:///modules/configs/fooserver/foo.vcl',
         :varnishlog => true,
         :varnishncsa => true,
+        :logdir => '/mnt/logs/varnish',
+        :ncsa_log_format => '-F %h %l %u %t "%r" %s %b "%{Referer}i" "%{User-agent}i"',
         :vmods => ['libvmod-throttle'],
         :vmod_deps => ['libpcre3-dev'],
         :nfiles => '1',
@@ -529,6 +548,23 @@ describe 'varnish::instance', :type => :define do
             :mode => '0644',
             :source => 'puppet:///modules/configs/fooserver/foo.vcl',
           })
+    }
+    it { should contain_file('/etc/init.d/varnishlog-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(%r{LOGFILE=/mnt/logs/varnish/\$NAME.log})
+    }
+    it { should contain_file('/etc/init.d/varnishncsa-foo').with({
+            :ensure => 'present',
+            :owner => 'root',
+            :group => 'root',
+            :mode => '0700',
+          }) \
+          .with_content(%r{LOGFILE=/mnt/logs/varnish/\$NAME.log}) \
+          .with_content(/LOGFORMAT='-F %h %l %u %t "%r" %s %b "%{Referer}i" "%{User-agent}i"'/)
     }
     it { should contain_service("varnish-foo").with({
             :ensure => 'running',

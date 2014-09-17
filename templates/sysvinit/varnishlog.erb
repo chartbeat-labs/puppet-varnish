@@ -18,7 +18,7 @@ DESC="HTTP accelerator log deamon"
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/bin/varnishlog
 PIDFILE=/var/run/varnishlog/$NAME.pid
-LOGFILE=/var/log/varnish/$NAME.log
+LOGFILE=<%= @logdir %>/$NAME.log
 USER=varnishlog
 DAEMON_OPTS="-n <%= @instance %> -a -w ${LOGFILE} -D -P $PIDFILE"
 

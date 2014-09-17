@@ -1,3 +1,7 @@
+2014-09-17 Release 0.0.4
+- Add support for changing logdirs
+- Add support for changing ncsa log format
+
 2014-06-08 Release 0.0.3
 - Add support for puppet 3.6.x
 

@@ -18,9 +18,10 @@ DESC="HTTP accelerator log deamon"
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/bin/varnishncsa
 PIDFILE=/var/run/varnishncsa/$NAME.pid
-LOGFILE=/var/log/varnish/$NAME.log
+LOGFILE=<%= @logdir %>/$NAME.log
+LOGFORMAT='<%= @ncsa_log_format %>'
 USER=varnishlog
-DAEMON_OPTS="-n <%= @instance %> -f -a -w ${LOGFILE} -D -P ${PIDFILE}"
+DAEMON_OPTS="-n <%= @instance %> ${LOGFORMAT} -a -w ${LOGFILE} -D -P ${PIDFILE}"
 
 # Include defaults if available
 if [ -f /etc/default/$NAME ] ; then
