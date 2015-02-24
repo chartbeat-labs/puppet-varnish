@@ -1,5 +1,7 @@
 2015-02-24 Release 0.0.5
 - Dont pin puppetlabs/apt at 1.4.0
+- Add tests for puppet 3.7
+- Add metadata.json, remove Modulefile
 
 2014-09-17 Release 0.0.4
 - Add support for changing logdirs
