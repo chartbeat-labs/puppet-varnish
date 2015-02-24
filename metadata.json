@@ -1,6 +1,6 @@
 {
   "name": "chartbeat-varnish",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "chartbeat",
   "summary": "Module to manage the Varnish Web Accelerator",
   "license": "MIT",
