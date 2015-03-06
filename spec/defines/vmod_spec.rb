@@ -7,6 +7,7 @@ describe 'varnish::vmod', :type => :define do
 
   let(:facts) {{
     :osfamily => 'Debian',
+    :lsbdistid => 'Ubuntu',
     :lsbdistcodename => 'precise',
   }}
 

@@ -4,6 +4,7 @@ describe 'varnish', :type => :class do
   describe 'varnish::repo class on Debian' do
     let(:facts) {{
       :osfamily => 'Debian',
+      :lsbdistid => 'Ubuntu',
       :lsbdistcodename => 'precise',
     }}
 
@@ -25,7 +26,7 @@ describe 'varnish', :type => :class do
       let(:params) {{
         :apt_location => 'http://example.com/debian',
         :apt_repos => 'main',
-        :apt_key => 'XXXXXXX',
+        :apt_key => 'FFFFFFFF',
         :apt_key_source => 'http://example.com/foo.txt',
         :apt_include_src => false,
       }}
@@ -34,7 +35,7 @@ describe 'varnish', :type => :class do
         'location' => 'http://example.com/debian',
         'release' => 'precise',
         'repos' => 'main',
-        'key' => 'XXXXXXX',
+        'key' => 'FFFFFFFF',
         'key_source' => 'http://example.com/foo.txt',
         'include_src' => false,
         })
