@@ -1,4 +1,4 @@
-require 'spec_helper_system'
+require 'spec_helper_acceptance'
 
 describe 'instance tests: 1 instance install' do
   it 'should work with no errors and be idempotent' do
@@ -6,11 +6,8 @@ describe 'instance tests: 1 instance install' do
       varnish::instance { 'default': }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-      r.refresh
-      r.exit_code.should be_zero
-    end
+    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, :catch_changes  => true)
   end
 
   describe service('varnish-default') do
@@ -25,9 +22,7 @@ describe 'instance test: 1 instance removal' do
       varnish::instance { 'default': ensure => 'purged' }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-    end
+    apply_manifest(pp, :catch_failures => true)
   end
 
   describe service('varnish-default') do
@@ -45,11 +40,8 @@ describe 'instance test: 2 instances install' do
       }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-      r.refresh
-      r.exit_code.should be_zero
-    end
+    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, :catch_changes  => true)
   end
 
   describe service('varnish-inst1') do
@@ -70,9 +62,7 @@ describe 'instance test: 2 instances removal' do
       varnish::instance { 'inst2': ensure => 'purged' }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-    end
+    apply_manifest(pp, :catch_failures => true)
   end
 
   describe service('varnish-inst1') do
@@ -95,11 +85,8 @@ describe 'instance install: with a dependent package installed independently' do
       varnish::instance { 'inst1': }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-      r.refresh
-      r.exit_code.should be_zero
-    end
+    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, :catch_changes  => true)
   end
 
   describe package('git-core') do
@@ -113,9 +100,7 @@ describe 'instance install: purged instance should not remove package' do
       varnish::instance { 'inst1': ensure => 'purged' }
     EOF
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-    end
+    apply_manifest(pp, :catch_failures => true)
   end
 
   describe package('git-core') do
@@ -134,10 +119,7 @@ describe 'instance install with custom request' do
       }
     EOS
 
-    puppet_apply(pp) do |r|
-      r.exit_code.should == 2
-      r.refresh
-      r.exit_code.should be_zero
-    end
+    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, :catch_changes  => true)
   end
 end
