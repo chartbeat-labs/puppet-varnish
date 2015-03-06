@@ -6,7 +6,7 @@ source 'https://rubygems.org'
 gem 'puppet', ENV['PUPPET_VERSION'] || '~> 3.7.0'
 
 gem 'rake'
-gem 'puppet-lint'
+gem 'puppet-lint', '~> 1.0.1' # Until they fix regression for ignore_paths
 gem 'serverspec'
 gem 'rspec-puppet'
 gem 'rspec-system-puppet'

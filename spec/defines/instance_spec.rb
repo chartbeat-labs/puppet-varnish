@@ -7,6 +7,7 @@ describe 'varnish::instance', :type => :define do
 
   let(:facts) {{
     :osfamily => 'Debian',
+    :lsbdistid => 'Ubuntu',
     :lsbdistcodename => 'precise',
   }}
 
@@ -603,33 +604,25 @@ describe 'varnish::instance', :type => :define do
       let :params do
         { :varnishlog => 'foo' }
       end
-      it { expect { should }.to raise_error(Puppet::Error,
-                                            /"foo" is not a boolean/)
-      }
+      it { expect { should raise_error(Puppet::Error, /foo is not a boolean/) } }
     end
     context "when varnishncsa is not a boolean" do
       let :params do
         { :varnishlog => 'foo' }
       end
-      it { expect { should }.to raise_error(Puppet::Error,
-                                            /"foo" is not a boolean/)
-      }
+      it { expect { should raise_error(Puppet::Error, /foo is not a boolean/) } }
     end
     context "with unsupported init_method" do
       let :params do
         { :init_method => 'foo' }
       end
-      it { expect { should }.to raise_error(
-        Puppet::Error, /Varnish::Instance\[default\]: Unsupported init => foo/)
-      }
+      it { expect { should raise_error(Puppet::Error, /Varnish::Instance\[default\]: Unsupported init => foo/) } }
     end
     context "with unsupported ensure" do
       let :params do
         { :ensure => 'foo' }
       end
-      it { expect { should }.to raise_error(
-        Puppet::Error, /Varnish::Instance\[default\]: Unsupported ensure => foo/)
-      }
+      it { expect { should raise_error(Puppet::Error, /Varnish::Instance\[default\]: Unsupported ensure => foo/) } }
     end
   end
 end

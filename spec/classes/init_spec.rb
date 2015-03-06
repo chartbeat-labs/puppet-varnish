@@ -7,6 +7,7 @@ describe 'varnish' do
         let(:params) {{ }}
         let(:facts) {{
           :osfamily => osfamily,
+          :lsbdistid => 'Ubuntu',
           :lsbdistcodename => 'precise',
         }}
 
@@ -26,7 +27,7 @@ describe 'varnish' do
         :operatingsystem => 'Nexenta',
       }}
 
-      it { expect { should }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+      it { expect { should raise_error(Puppet::Error, /Nexenta not supported/) } }
     end
   end
   context 'invalid parameter' do
@@ -34,7 +35,7 @@ describe 'varnish' do
       let :params do
         { :foo => 'bar' }
       end
-      it { expect { should }.to raise_error(Puppet::Error, /Invalid parameter foo/) }
+      it { expect { should raise_error(Puppet::Error, /Invalid parameter foo/) } }
     end
   end
 end
