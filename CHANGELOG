@@ -1,3 +1,8 @@
+2015-03-05 Release 1.0.0
+- Drop support for ruby 1.8.7
+- Add support for ruby 2.0.0
+- Bump puppetlabs/apt, puppetlabs/stdlib deps
+
 2015-02-24 Release 0.0.5
 - Dont pin puppetlabs/apt at 1.4.0
 - Add tests for puppet 3.7
