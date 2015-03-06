@@ -11,6 +11,7 @@ exclude_paths = [
   "spec/**/*",
 ]
 PuppetLint.configuration.ignore_paths = exclude_paths
+PuppetSyntax.exclude_paths = exclude_paths
 
 desc "Run lint and spec tests."
 task :test => [

@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'varnish::config' do
   let(:facts) {{
     :osfamily => 'Debian',
+    :lsbdistid => 'Ubuntu',
     :lsbdistcodename => 'precise',
   }}
 

@@ -1,0 +1,15 @@
+{
+  "name": "chartbeat-varnish",
+  "version": "1.0.0",
+  "author": "chartbeat",
+  "summary": "Module to manage the Varnish Web Accelerator",
+  "license": "MIT",
+  "source": "https://github.com/chartbeat-labs/puppet-varnish",
+  "project_page": "https://github.com/chartbeat-labs/puppet-varnish",
+  "issues_url": "https://github.com/chartbeat-labs/puppet-varnish/issues",
+  "description": "Varnish module for Puppet",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.0.0"},
+    {"name":"puppetlabs/apt","version_requirement":">= 1.7.0"}
+  ]
+}
