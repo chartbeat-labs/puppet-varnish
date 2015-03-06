@@ -5,14 +5,21 @@ source 'https://rubygems.org'
 
 gem 'puppet', ENV['PUPPET_VERSION'] || '~> 3.6.0'
 
-gem 'rake'
-gem 'puppet-lint', '~> 1.0.1' # Until they fix regression for ignore_paths
-gem 'serverspec'
-gem 'rspec-puppet'
-gem 'rspec-system-puppet'
-gem 'rspec-system-serverspec'
-gem 'puppetlabs_spec_helper'
+group :development, :test do
+  gem 'rake'
+  gem 'puppet-lint', '~> 1.0.1' # Until they fix regression for ignore_paths
+  gem 'rspec-puppet'
+  gem 'puppetlabs_spec_helper'
 
-# Needed since puppet 2.7 doesn't include hiera
-gem 'hiera' if ENV['PUPPET_VERSION'] =~ /2.7/
-gem 'hiera-puppet' if ENV['PUPPET_VERSION'] =~ /2.7/
+  # Needed since puppet 2.7 doesn't include hiera
+  if ENV['PUPPET_VERSION'] =~ /2.7/
+    gem 'hiera'
+    gem 'hiera-puppet'
+  end
+end
+
+group :system_tests do
+  gem 'serverspec'
+  gem 'rspec-system-puppet'
+  gem 'rspec-system-serverspec'
+end
