@@ -181,9 +181,9 @@ $ git clone git://github.com/chartbeat/puppet-varnish.git
 $ cd puppet-varnish
 $ bundle install
 $ bundle exec rake spec
-$ bundle exec rake spec:system
+$ bundle exec rake acceptance
 ```
 
-To perform spec:system tests, you'll need [Vagrant](http://vagrantup.com) installed.
+To perform acceptance tests, you'll need [Vagrant](http://vagrantup.com) installed.
 
 See [LICENSE](LICENSE) file.
