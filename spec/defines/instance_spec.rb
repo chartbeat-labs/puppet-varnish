@@ -21,8 +21,8 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0700',
-            :before => 'File[/etc/varnish/default.vcl]',
-            :notify => 'Service[varnish-default]',
+            :before => ['File[/etc/varnish/default.vcl]'],
+            :notify => ['Service[varnish-default]'],
           }) \
           .with_content(/^NAME=varnishd-default$/) \
           .with_content(/^ulimit -n 131072$/) \
@@ -34,7 +34,7 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0700',
-            :notify => 'Service[varnishlog-default]',
+            :notify => ['Service[varnishlog-default]'],
           }) \
           .with_content(/^NAME=varnishlog-default$/)
     }
@@ -43,7 +43,7 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0700',
-            :notify => 'Service[varnishncsa-default]',
+            :notify => ['Service[varnishncsa-default]'],
           }) \
           .with_content(/^NAME=varnishncsa-default$/)
     }
@@ -52,8 +52,8 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0644',
-            :before => 'File[/etc/init.d/varnish-default]',
-            :notify => 'Service[varnish-default]',
+            :before => ['File[/etc/init.d/varnish-default]'],
+            :notify => ['Service[varnish-default]'],
           }) \
           .with('ensure' => 'present') \
           .with_content(/-n default/) \
@@ -131,8 +131,8 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0644',
-            :before => 'File[/etc/init.d/varnishlog-default]',
-            :notify => 'Service[varnishlog-default]',
+            :before => ['File[/etc/init.d/varnishlog-default]'],
+            :notify => ['Service[varnishlog-default]'],
           }) \
           .with_content(/^VARNISHLOG_ENABLED=1$/)
     }
@@ -141,8 +141,8 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0644',
-            :before => 'File[/etc/init.d/varnishncsa-default]',
-            :notify => 'Service[varnishncsa-default]',
+            :before => ['File[/etc/init.d/varnishncsa-default]'],
+            :notify => ['Service[varnishncsa-default]'],
           }) \
           .with_content(/^VARNISHNCSA_ENABLED=1$/)
     }
@@ -151,8 +151,8 @@ describe 'varnish::instance', :type => :define do
             :owner => 'root',
             :group => 'root',
             :mode => '0644',
-            :before => 'Service[varnish-default]',
-            :notify => 'Exec[varnish-default safe reload]',
+            :before => ['Service[varnish-default]'],
+            :notify => ['Exec[varnish-default safe reload]'],
           }) \
           .with_content(%r{.url = "/"}) \
           .with_content(%r{.timeout = 2s}) \
