@@ -1,6 +1,6 @@
 {
   "name": "chartbeat-varnish",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "chartbeat",
   "summary": "Module to manage the Varnish Web Accelerator",
   "license": "MIT",
@@ -20,11 +20,11 @@
   ],
   "operatingsystem_support": [
     {
-     "operatingsystem": "Debian",
-     "operatingsystemrelease": [
-       "6",
-       "7"
-     ]
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     }
   ]
 }
