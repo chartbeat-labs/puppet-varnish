@@ -10,8 +10,13 @@ class varnish::repo {
     location    => $::varnish::apt_location,
     release     => $::lsbdistcodename,
     repos       => $::varnish::apt_repos,
-    key         => $::varnish::apt_key,
-    key_source  => $::varnish::apt_key_source,
-    include_src => $::varnish::apt_include_src,
+    key         => {
+      'id'      => $::varnish::apt_key,
+      'source'  => $::varnish::apt_key_source,
+    },
+    include => {
+      'deb' => 'true',
+      'src' => $::varnish::apt_include_src,
+    },
   }
 }
