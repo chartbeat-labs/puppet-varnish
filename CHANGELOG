@@ -1,3 +1,7 @@
+2015-07-23 Release 1.1.0
+- Support puppetlabs/apt >=2.0.0
+- Not backwards compat with puppetlabs/apt <2.0.0
+
 2015-03-09 Release 1.0.1
 - Add groups to the Gemfile
 - Remove rspec-system-puppet in favor of the puppetlabs supported beaker

@@ -15,9 +15,9 @@ describe 'varnish', :type => :class do
           'location' => 'http://repo.varnish-cache.org/debian/',
           'release' => 'precise',
           'repos' => 'varnish-3.0',
-          'key' => 'C4DEFFEB',
-          'key_source' => 'http://repo.varnish-cache.org/debian/GPG-key.txt',
-          'include_src' => true,
+          'key' => { 'id' => 'C4DEFFEB', 'source' => 'http://repo.varnish-cache.org/debian/GPG-key.txt', },
+          'include' => { 'deb' => true, 'src' => 'true' },
+
         })
       }
     end
@@ -35,9 +35,8 @@ describe 'varnish', :type => :class do
         'location' => 'http://example.com/debian',
         'release' => 'precise',
         'repos' => 'main',
-        'key' => 'FFFFFFFF',
-        'key_source' => 'http://example.com/foo.txt',
-        'include_src' => false,
+        'key' => { 'id' => 'FFFFFFFF', 'source' => 'http://example.com/foo.txt', },
+        'include' => { 'deb' => true, 'src' => 'false' },
         })
       }
     end
