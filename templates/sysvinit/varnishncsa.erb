@@ -21,7 +21,7 @@ PIDFILE=/var/run/varnishncsa/$NAME.pid
 LOGFILE=<%= @logdir %>/$NAME.log
 LOGFORMAT='<%= @ncsa_log_format %>'
 USER=varnishlog
-DAEMON_OPTS="-n <%= @instance %> ${LOGFORMAT} -a -w ${LOGFILE} -D -P ${PIDFILE}"
+DAEMON_OPTS="-n <%= @instance %> -a -w ${LOGFILE} -D -P ${PIDFILE}"
 
 # Include defaults if available
 if [ -f /etc/default/$NAME ] ; then
@@ -42,7 +42,7 @@ start_varnishncsa() {
     log_daemon_msg "Starting $DESC" "$NAME"
     create_pid_directory
     if start-stop-daemon --start --quiet --pidfile ${PIDFILE} \
-        --chuid $USER --exec ${DAEMON} -- ${DAEMON_OPTS} \
+        --chuid $USER --exec ${DAEMON} -- ${DAEMON_OPTS} -F "${LOGFORMAT}" \
         > ${output} 2>&1; then
         log_end_msg 0
     else
