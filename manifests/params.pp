@@ -13,7 +13,7 @@ class varnish::params {
                             'pkg-config', 'libpcre3-dev', 'git-core']
       $apt_location = 'http://repo.varnish-cache.org/debian/'
       $apt_repos = 'varnish-3.0'
-      $apt_key = 'C4DEFFEB'
+      $apt_key = 'E98C6BBBA1CBC5C3EB2DF21C60E7C096C4DEFFEB'
       $apt_key_source = 'http://repo.varnish-cache.org/debian/GPG-key.txt'
     }
     default: {
