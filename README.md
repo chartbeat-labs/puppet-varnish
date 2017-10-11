@@ -70,31 +70,6 @@ varnish::instance { 'instance0' :
 }
 ```
 
-### Repo
-
-This varnish module currently uses the public repo.varnish-cache.org debian
-repository. If you want to use another repo, you can do it like the varnish
-package above, with class parameters or hiera.
-
-*Class Parameters*
-```puppet
-class { 'varnish' :
-  apt_location => 'http://some.other.repo',
-  apt_repos    => 'main restricted universe',
-  ...
-}
-```
-
-*Hiera*
-```
----
-varnish::apt_location: 'http://some.other/repo'
-varnish::apt_repos: 'repo-name'
-varnish::apt_key: 'XXXXXX'
-varnish::key_source: 'http://some.other/key.txt'
-varnish::apt_include_src: false
-```
-
 ### Configs
 
 The varnish::instance type ships with a pretty simple config. You can pass

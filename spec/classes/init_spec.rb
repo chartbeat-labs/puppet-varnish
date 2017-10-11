@@ -12,7 +12,6 @@ describe 'varnish' do
         }}
 
         it { should contain_class('varnish::params') }
-        it { should contain_class('varnish::repo') }
         it { should contain_class('varnish::install') }
         it { should contain_class('varnish::config') }
         it { should contain_class('varnish::service') }
