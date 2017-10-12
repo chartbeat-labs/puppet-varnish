@@ -1,6 +1,6 @@
 {
   "name": "chartbeat-varnish",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "chartbeat",
   "summary": "Module to manage the Varnish Web Accelerator",
   "license": "MIT",
@@ -12,10 +12,6 @@
     {
       "name": "puppetlabs/stdlib",
       "version_requirement": ">=4.0.0"
-    },
-    {
-      "name": "puppetlabs/apt",
-      "version_requirement": ">=2.0.0"
     }
   ],
   "operatingsystem_support": [

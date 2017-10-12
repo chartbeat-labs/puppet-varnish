@@ -3,8 +3,5 @@ fixtures:
     stdlib:
       repo: "puppetlabs/stdlib"
       ref: "4.1.0"
-    apt:
-      repo: "puppetlabs/apt"
-      ref: "2.1.0"
   symlinks:
     varnish: "#{source_dir}"
